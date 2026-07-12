@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 (2026-07-12)
+
+- Docs: removed subscription-tier mentions — works on any plan; npm README refreshed.
+- First release through GitHub Actions auto-publish (NPM_TOKEN wired).
+
 ## Unreleased (v0.1 engine — week 1 complete)
 
 - **Engine**: locale IO (flat + i18next namespaces, JSON/YAML, key order preserved), lockfile with per-language source shas and ownership (`i18n-agent`/`human`), sync planner with the full key lifecycle: translate / keep / retranslate / adopt / review / rename-migrate / prune.
