@@ -7,6 +7,7 @@ import 'reflect-metadata';
 import request from 'supertest';
 
 const { Test } = await import('@nestjs/testing');
+const { FastifyAdapter } = await import('@nestjs/platform-fastify');
 const { I18nAgentModule } = await import('../dist/index.js');
 const { loadConfig, buildBundle } = await import('i18n-agent');
 
@@ -20,51 +21,60 @@ function setupBundle() {
   return buildBundle(loadConfig(root));
 }
 
-describe('I18nAgentModule', () => {
-  let app;
-  let bundle;
+const adapters = [
+  { name: 'express', create: () => undefined },
+  { name: 'fastify', create: () => new FastifyAdapter() },
+];
 
-  before(async () => {
-    bundle = setupBundle();
-    const moduleRef = await Test.createTestingModule({
-      imports: [I18nAgentModule.forRoot({ bundleDir: bundle.outDir })],
-    }).compile();
-    app = moduleRef.createNestApplication();
-    await app.init();
+for (const { name, create } of adapters) {
+  describe(`I18nAgentModule (${name})`, () => {
+    let app;
+    let bundle;
+
+    before(async () => {
+      bundle = setupBundle();
+      const moduleRef = await Test.createTestingModule({
+        imports: [I18nAgentModule.forRoot({ bundleDir: bundle.outDir })],
+      }).compile();
+      const adapter = create();
+      app = adapter ? moduleRef.createNestApplication(adapter) : moduleRef.createNestApplication();
+      await app.init();
+      await app.getHttpAdapter().getInstance().ready?.();
+    });
+
+    after(async () => {
+      await app?.close();
+    });
+
+    it('serves the manifest with the bundle etag', async () => {
+      const res = await request(app.getHttpServer()).get('/i18n/manifest.json').expect(200);
+      assert.equal(res.headers.etag, `"${bundle.manifest.etag}"`);
+      assert.equal(JSON.parse(res.text).sourceLanguage ?? JSON.parse(res.text).sourceLang, 'en');
+    });
+
+    it('serves a locale file with a per-file etag and honors If-None-Match', async () => {
+      const first = await request(app.getHttpServer()).get('/i18n/web/ru/common.json').expect(200);
+      assert.ok(first.text.includes('Привет'));
+      assert.ok(first.headers.etag);
+      assert.ok(first.headers['cache-control'].includes('max-age'));
+
+      await request(app.getHttpServer())
+        .get('/i18n/web/ru/common.json')
+        .set('If-None-Match', first.headers.etag)
+        .expect(304);
+    });
+
+    it('serves platform artifacts too (android xml)', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/i18n/android/res/values-ru/strings.xml')
+        .expect(200);
+      assert.ok(res.text.includes('<resources>'));
+      assert.ok(res.headers['content-type'].includes('xml'));
+    });
+
+    it('404s unknown and traversal paths', async () => {
+      await request(app.getHttpServer()).get('/i18n/web/xx/common.json').expect(404);
+      await request(app.getHttpServer()).get('/i18n/..%2F..%2Fetc%2Fpasswd').expect(404);
+    });
   });
-
-  after(async () => {
-    await app?.close();
-  });
-
-  it('serves the manifest with the bundle etag', async () => {
-    const res = await request(app.getHttpServer()).get('/i18n/manifest.json').expect(200);
-    assert.equal(res.headers.etag, `"${bundle.manifest.etag}"`);
-    assert.equal(JSON.parse(res.text).sourceLanguage ?? JSON.parse(res.text).sourceLang, 'en');
-  });
-
-  it('serves a locale file with a per-file etag and honors If-None-Match', async () => {
-    const first = await request(app.getHttpServer()).get('/i18n/web/ru/common.json').expect(200);
-    assert.ok(first.text.includes('Привет'));
-    assert.ok(first.headers.etag);
-    assert.ok(first.headers['cache-control'].includes('max-age'));
-
-    await request(app.getHttpServer())
-      .get('/i18n/web/ru/common.json')
-      .set('If-None-Match', first.headers.etag)
-      .expect(304);
-  });
-
-  it('serves platform artifacts too (android xml)', async () => {
-    const res = await request(app.getHttpServer())
-      .get('/i18n/android/res/values-ru/strings.xml')
-      .expect(200);
-    assert.ok(res.text.includes('<resources>'));
-    assert.ok(res.headers['content-type'].includes('xml'));
-  });
-
-  it('404s unknown and traversal paths', async () => {
-    await request(app.getHttpServer()).get('/i18n/web/xx/common.json').expect(404);
-    await request(app.getHttpServer()).get('/i18n/..%2F..%2Fetc%2Fpasswd').expect(404);
-  });
-});
+}

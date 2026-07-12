@@ -1,7 +1,7 @@
 {
   "name": "i18n-agent-nest",
-  "version": "0.1.0",
-  "description": "Serve i18n-agent bundles from your own NestJS backend \u2014 self-hosted translation delivery with ETag caching. No third-party cloud.",
+  "version": "0.1.1",
+  "description": "Serve i18n-agent bundles from your own NestJS backend — self-hosted translation delivery with ETag caching. No third-party cloud.",
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,12 +18,14 @@
     "i18n-agent": "^0.3.0"
   },
   "peerDependencies": {
-    "@nestjs/common": "^10.0.0 || ^11.0.0"
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@nestjs/core": "^10.0.0 || ^11.0.0"
   },
   "devDependencies": {
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/platform-fastify": "^11.1.28",
     "@nestjs/testing": "^11.0.0",
     "@types/node": "^22.0.0",
     "@types/supertest": "^6.0.0",

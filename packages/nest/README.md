@@ -40,6 +40,7 @@ i18n-agent translate && i18n-agent export --bundle
 - Every response carries an **ETag** (content hash from the manifest); `If-None-Match` → **304**.
 - Only manifest-listed paths are served — path traversal is structurally impossible.
 - Regenerating the bundle in place is picked up automatically (manifest mtime watch).
-- Express adapter (Nest default). Not on Nest? The bundle is plain static files — `express.static`, nginx `root`, or an S3 bucket work just as well; this module only adds correct ETags and a manifest route on top.
+- Works on **both Nest HTTP adapters** — Express and Fastify. Routes are registered directly on the adapter (the two routers share no wildcard syntax), so the bundle mounts at the app root: global prefixes, guards, and interceptors do not apply to it.
+- Not on Nest? The bundle is plain static files — `express.static`, nginx `root`, or an S3 bucket work just as well; this module only adds correct ETags and a manifest route on top.
 
 MIT
