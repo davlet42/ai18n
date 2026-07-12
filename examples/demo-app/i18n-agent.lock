@@ -5,12 +5,12 @@
       "targets": {
         "es": {
           "sha": "ba356faaa8e2119d5de6b71668c9b8315693a58fbf36fdd4f977a1a6bca0de1c",
-          "by": "ai18n",
+          "by": "machine",
           "source": "c0b81506f3551af1f7aafd65d68b170f480475ccc7038dd2bca8aa7a1265ed1e"
         },
         "ru": {
           "sha": "09d567b56698366682bd72680ca9d7085ed55fe6f5f28bfd2a7f71416f45c008",
-          "by": "ai18n",
+          "by": "machine",
           "source": "c0b81506f3551af1f7aafd65d68b170f480475ccc7038dd2bca8aa7a1265ed1e"
         }
       }
@@ -19,12 +19,12 @@
       "targets": {
         "es": {
           "sha": "8d518bb65ea3dedb5250e357ef5d2ea42c178c140f655b95f7b610835f72f3d0",
-          "by": "ai18n",
+          "by": "machine",
           "source": "c189840cf7e2d6f6fdeefde1ac59dfdf50bb75642eb569b4e38a5614d6f12ac2"
         },
         "ru": {
           "sha": "8fc9ab2eeb38ad7a5ee16c668e0b80d52041249411f886b28981e93ff32d52b9",
-          "by": "ai18n",
+          "by": "machine",
           "source": "c189840cf7e2d6f6fdeefde1ac59dfdf50bb75642eb569b4e38a5614d6f12ac2"
         }
       }
@@ -33,12 +33,12 @@
       "targets": {
         "es": {
           "sha": "8eb9cbdec36eae401420f6a94bd6792398c4286b447dd0f5b3a1692801a22754",
-          "by": "ai18n",
+          "by": "machine",
           "source": "30c1d8d3e912889307433b5fec7c012faf4c224ce8e0526ce2879c7a52cbd6cd"
         },
         "ru": {
           "sha": "8916589555038ec77f37b20c3470d1705c419fcd664d0c1a39a0b7d630f62b01",
-          "by": "ai18n",
+          "by": "machine",
           "source": "30c1d8d3e912889307433b5fec7c012faf4c224ce8e0526ce2879c7a52cbd6cd"
         }
       }
@@ -47,12 +47,12 @@
       "targets": {
         "es": {
           "sha": "8de47f0cccfa840fc1cc4ebd6dc1e5ee9fba2e930b42701d42ce168e45a14f93",
-          "by": "ai18n",
+          "by": "machine",
           "source": "54f9715d07d21af5a9a34297f3e442a50086b83034aa0647e59d00c643b7e5a4"
         },
         "ru": {
           "sha": "7d5ee2011fa6de1f8bde854c75d57461c68ed6af58e835df85e751531c57f28a",
-          "by": "ai18n",
+          "by": "machine",
           "source": "54f9715d07d21af5a9a34297f3e442a50086b83034aa0647e59d00c643b7e5a4"
         }
       }
@@ -61,12 +61,12 @@
       "targets": {
         "es": {
           "sha": "bfc0e5aa5991c54c59d32953f0f9b49077cf470cc09342d5f90e514e8df128d9",
-          "by": "ai18n",
+          "by": "machine",
           "source": "bfc0e5aa5991c54c59d32953f0f9b49077cf470cc09342d5f90e514e8df128d9"
         },
         "ru": {
           "sha": "bfc0e5aa5991c54c59d32953f0f9b49077cf470cc09342d5f90e514e8df128d9",
-          "by": "ai18n",
+          "by": "machine",
           "source": "bfc0e5aa5991c54c59d32953f0f9b49077cf470cc09342d5f90e514e8df128d9"
         }
       }
@@ -75,12 +75,12 @@
       "targets": {
         "es": {
           "sha": "9591d2e5a070679452784ea4d476a8056d795f20bc515a7207a34d0812bdb953",
-          "by": "ai18n",
+          "by": "machine",
           "source": "e60f4a2107671f011fe859e61bce00bfda51cf1c96759c23ed40dd2cd548a89c"
         },
         "ru": {
           "sha": "38b0ff3954fcaa55db7aa3634c6ef523b7d6fcb55b3a7cb7bed7c9e01e2fe478",
-          "by": "ai18n",
+          "by": "machine",
           "source": "e60f4a2107671f011fe859e61bce00bfda51cf1c96759c23ed40dd2cd548a89c"
         }
       }
@@ -89,12 +89,12 @@
       "targets": {
         "es": {
           "sha": "c1a197c74d37a221ec0336089bc82b2317e9677a419d13a702c45f8f0e6a563d",
-          "by": "ai18n",
+          "by": "machine",
           "source": "7fb9ec21cb0ad15cef41bbba80a6ac76515ce75ad42d4f3a7e948e6154474afe"
         },
         "ru": {
           "sha": "07ee8408c98665bb7a67741485a772237fb7f8863bf160f305d2472cd718a3ab",
-          "by": "ai18n",
+          "by": "machine",
           "source": "7fb9ec21cb0ad15cef41bbba80a6ac76515ce75ad42d4f3a7e948e6154474afe"
         }
       }
@@ -103,12 +103,12 @@
       "targets": {
         "es": {
           "sha": "8decaacd34f61cc29643a7cce76341944ea11b0a49d5c22830842508fd34fc37",
-          "by": "ai18n",
+          "by": "machine",
           "source": "1e8d8ca70d3664a86f8e3e5996c394b85e960335664ae9ed01883a8fe3cd0da6"
         },
         "ru": {
           "sha": "496418a37075fcefc340e95b2c742e01fa05b34bbfeda65351a641765305dea1",
-          "by": "ai18n",
+          "by": "machine",
           "source": "1e8d8ca70d3664a86f8e3e5996c394b85e960335664ae9ed01883a8fe3cd0da6"
         }
       }
@@ -117,12 +117,12 @@
       "targets": {
         "es": {
           "sha": "14bdfaf2face3a07de2519fa161bbdcc2a380a231f180a569695a13b8a9947a5",
-          "by": "ai18n",
+          "by": "machine",
           "source": "dd0ae7a5cbcf233968657563dce34639e681861e2df6d3f845c08d49981c0999"
         },
         "ru": {
           "sha": "744cf2b219992c28613d6dd92c1f9a70e66937d4f664ddc60cb85da18d789e3d",
-          "by": "ai18n",
+          "by": "machine",
           "source": "dd0ae7a5cbcf233968657563dce34639e681861e2df6d3f845c08d49981c0999"
         }
       }
@@ -131,12 +131,12 @@
       "targets": {
         "es": {
           "sha": "1fd39bc93fed638dba0c26753c7d9856ef52a46bce69b8d6517a4e92ba21596d",
-          "by": "ai18n",
+          "by": "machine",
           "source": "c9a03d389dd487b8e7c3f46bbc07515c13537495c7c33c27c7ca6de6f57d65a1"
         },
         "ru": {
           "sha": "1a18289238d1481ebd2b8abbf8a2d698d67e5d0e0fd0ecff5eb9b688b893a367",
-          "by": "ai18n",
+          "by": "machine",
           "source": "c9a03d389dd487b8e7c3f46bbc07515c13537495c7c33c27c7ca6de6f57d65a1"
         }
       }
@@ -145,12 +145,12 @@
       "targets": {
         "es": {
           "sha": "6e90c98b1a8f7440274e08fa270fccffd1d9ea1beafbeefeaaeb325c6909fa58",
-          "by": "ai18n",
+          "by": "machine",
           "source": "945d1c210c42783b3bf35d306971e2e3c163647eaa6e8de547507df1bd289aa3"
         },
         "ru": {
           "sha": "5b432d6419bd45a0b9424ee0da9498439d1e98ba9173985e81ff208c00f7c2b4",
-          "by": "ai18n",
+          "by": "machine",
           "source": "945d1c210c42783b3bf35d306971e2e3c163647eaa6e8de547507df1bd289aa3"
         }
       }

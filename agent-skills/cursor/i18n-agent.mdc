@@ -1,0 +1,25 @@
+---
+description: Localization workflow with i18n-agent — apply when adding i18n to a project, translating locale files, adding a target language, or fixing locale drift. Edit only the source locale; targets are machine-owned.
+alwaysApply: false
+---
+
+# i18n-agent localization workflow
+
+This project (or the user) uses i18n-agent: locale targets are translated through
+the user's subscription via `npx i18n-agent …`. Rules:
+
+- You author ONLY the source locale (`locales/<source>/…`). Move user-facing
+  strings into keys there; never hardcode UI text.
+- Never write translations into target locale files by hand — a hand-written
+  value becomes human-owned and stops receiving machine updates. Targets are
+  produced by `npx i18n-agent translate`.
+- New project: `npx i18n-agent init` → `npx i18n-agent add-locale <lang> --translate`.
+- After source-locale changes: `npx i18n-agent translate`. Before commit:
+  `npx i18n-agent check` (CI gate, exit 1 on drift).
+- Keep placeholders byte-identical in source edits: `{var}`, `{{var}}`,
+  printf, `$t(...)`, HTML tags, ICU plural/select.
+- "Awaiting review" keys (`npx i18n-agent translate --review`) are the USER's
+  decision: hand-edit (resolves review), `--accept-stale`, or
+  `--retranslate-stale`. Do not decide for them.
+- Ambiguous strings get a hint in `i18n-agent.context.yaml`. `i18n-agent.lock` is
+  committed and never edited by hand.

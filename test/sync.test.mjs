@@ -22,7 +22,7 @@ function fakeTransport(counter) {
 }
 
 function setupProject() {
-  const root = mkdtempSync(join(tmpdir(), 'ai18n-proj-'));
+  const root = mkdtempSync(join(tmpdir(), 'i18n-agent-proj-'));
   mkdirSync(join(root, 'locales', 'en'), { recursive: true });
   writeFileSync(
     join(root, 'locales', 'en', 'common.json'),
@@ -36,7 +36,7 @@ function setupProject() {
   mkdirSync(join(root, 'locales', 'ru'), { recursive: true });
   writeFileSync(join(root, 'locales', 'ru', 'common.json'), JSON.stringify({ greet: 'Привет, {name}!' }, null, 2));
   writeFileSync(
-    join(root, 'ai18n.config.yaml'),
+    join(root, 'i18n-agent.config.yaml'),
     'source: en\ntargets: [ru, es]\nlocales: locales\n',
   );
   return root;
@@ -68,7 +68,7 @@ describe('sync end-to-end (fake transport)', () => {
     const esAuth = JSON.parse(readFileSync(join(root, 'locales', 'es', 'auth.json'), 'utf8'));
     assert.equal(esAuth.login.button, '[t] Sign in', 'new language materialized');
 
-    assert.ok(existsSync(join(root, 'ai18n.lock')));
+    assert.ok(existsSync(join(root, 'i18n-agent.lock')));
     assert.ok(result.translated >= 4);
 
     // second run: everything in sync → zero agent calls
@@ -163,17 +163,17 @@ describe('sync end-to-end (fake transport)', () => {
 
 describe('init + check commands', () => {
   it('init detects languages and writes documented templates; check reports drift', () => {
-    const root = mkdtempSync(join(tmpdir(), 'ai18n-init-'));
+    const root = mkdtempSync(join(tmpdir(), 'i18n-agent-init-'));
     mkdirSync(join(root, 'locales', 'en'), { recursive: true });
     mkdirSync(join(root, 'locales', 'de'), { recursive: true });
     writeFileSync(join(root, 'locales', 'en', 'common.json'), '{"hi":"Hi"}');
     writeFileSync(join(root, 'locales', 'de', 'common.json'), '{}');
 
     assert.equal(runInit(root, []), 0);
-    const config = readFileSync(join(root, 'ai18n.config.yaml'), 'utf8');
+    const config = readFileSync(join(root, 'i18n-agent.config.yaml'), 'utf8');
     assert.match(config, /source: en/);
     assert.match(config, /targets: \[de\]/);
-    assert.ok(readFileSync(join(root, 'ai18n.context.yaml'), 'utf8').includes('WHY:'), 'context template documented');
+    assert.ok(readFileSync(join(root, 'i18n-agent.context.yaml'), 'utf8').includes('WHY:'), 'context template documented');
 
     assert.equal(runCheck(root), 1, 'de missing a key → drift');
   });

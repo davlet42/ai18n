@@ -21,9 +21,9 @@ export function runReport(cwd: string, args: string[]): number {
 
   const entries = readRunMetrics({ days, project });
   const scope = all ? 'all projects' : `project "${project ?? '<none>'}"`;
-  console.log(formatReport(aggregateRunMetrics(entries), `ai18n report — last ${days} day(s), ${scope}`));
+  console.log(formatReport(aggregateRunMetrics(entries), `i18n-agent report — last ${days} day(s), ${scope}`));
   if (!all && entries.length === 0) {
-    console.log('  (tip: `ai18n report --all` shows every project)');
+    console.log('  (tip: `i18n-agent report --all` shows every project)');
   }
   return 0;
 }

@@ -24,7 +24,7 @@ export function runStatus(cwd: string): number {
     );
   }
   if (state.reviews.length > 0) {
-    console.log(`\n${state.reviews.length} key(s) await review — \`ai18n translate --review\`.`);
+    console.log(`\n${state.reviews.length} key(s) await review — \`i18n-agent translate --review\`.`);
   }
   return 0;
 }

@@ -3,7 +3,7 @@ import YAML from 'yaml';
 import { flattenTree, FLAT_NS, type LocaleTree } from './locale-files.js';
 import { keyId } from './lockfile.js';
 
-// ai18n.context.yaml — translator hints per key. Namespaced layouts nest under
+// i18n-agent.context.yaml — translator hints per key. Namespaced layouts nest under
 // the namespace name; flat layouts put keys at the top level:
 //
 //   # namespaces:                      # flat:
@@ -45,7 +45,7 @@ export function loadContextMap(path: string, layoutKind: 'flat' | 'namespaces'):
   return out;
 }
 
-// ai18n.glossary.yaml — terms the translator must respect:
+// i18n-agent.glossary.yaml — terms the translator must respect:
 //   terms:
 //     - Poieton              # bare term: keep untranslated
 //     - "Wallet = Кошелёк"   # pin an exact translation

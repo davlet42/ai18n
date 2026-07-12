@@ -10,17 +10,17 @@ const args = process.argv.slice(2);
 const command = args[0];
 
 function printHelp(): void {
-  console.log(`ai18n — locale files translated by the coding-agent subscription you already pay for
+  console.log(`i18n-agent — locale files translated by the coding-agent subscription you already pay for
 
 Usage:
-  ai18n init [--locales <dir>] [--source <lang>]     detect layout, write config + templates
-  ai18n translate [--dry-run] [--review] [--retranslate-stale] [--lang <l>]…
-  ai18n check                                        CI gate: exit 1 when locales drift
-  ai18n status                                       per-language sync overview
-  ai18n add-locale <lang> [<lang>…] [--translate]    add target languages
-  ai18n report [--days 7] [--all]                    volumes, spend receipts, DeepL-API equivalent
+  i18n-agent init [--locales <dir>] [--source <lang>]     detect layout, write config + templates
+  i18n-agent translate [--dry-run] [--review] [--retranslate-stale] [--lang <l>]…
+  i18n-agent check                                        CI gate: exit 1 when locales drift
+  i18n-agent status                                       per-language sync overview
+  i18n-agent add-locale <lang> [<lang>…] [--translate]    add target languages
+  i18n-agent report [--days 7] [--all]                    volumes, spend receipts, DeepL-API equivalent
 
-Files: ai18n.config.yaml · ai18n.context.yaml (translator hints) · ai18n.glossary.yaml · ai18n.lock
+Files: i18n-agent.config.yaml · i18n-agent.context.yaml (translator hints) · i18n-agent.glossary.yaml · i18n-agent.lock
 Docs:  https://github.com/davlet42/ai18n
 `);
 }

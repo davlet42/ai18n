@@ -3,7 +3,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 // Run metrics: one JSONL entry per (translate run × language) under
-// ~/.ai18n/metrics.jsonl (AI18N_HOME overrides — tests use a temp dir).
+// ~/.i18n-agent/metrics.jsonl (I18N_AGENT_HOME overrides — tests use a temp dir).
 // The interesting economics: actual spend receipts from `claude -p`
 // (notional API cost — $0 marginal on a subscription) versus what the same
 // characters would have cost on the DeepL API.
@@ -11,12 +11,12 @@ import { join } from 'node:path';
 // DeepL API Pro: ~$25 per 1M characters (plus base fee, ignored here).
 export const DEEPL_USD_PER_MILLION_CHARS = 25;
 
-export function ai18nHome(): string {
-  return process.env.AI18N_HOME ?? join(homedir(), '.ai18n');
+export function i18nAgentHome(): string {
+  return process.env.I18N_AGENT_HOME ?? join(homedir(), '.i18n-agent');
 }
 
 export function metricsPath(): string {
-  return join(ai18nHome(), 'metrics.jsonl');
+  return join(i18nAgentHome(), 'metrics.jsonl');
 }
 
 export interface RunMetricsEntry {
@@ -34,7 +34,7 @@ export interface RunMetricsEntry {
 
 export function appendRunMetrics(entry: RunMetricsEntry): void {
   try {
-    mkdirSync(ai18nHome(), { recursive: true });
+    mkdirSync(i18nAgentHome(), { recursive: true });
     appendFileSync(metricsPath(), `${JSON.stringify(entry)}\n`, 'utf8');
   } catch {
     // metrics must never break a translate run

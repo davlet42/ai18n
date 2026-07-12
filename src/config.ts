@@ -2,10 +2,10 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import YAML from 'yaml';
 
-// ai18n.config.yaml — the only required file. Looked up from cwd upwards so
+// i18n-agent.config.yaml — the only required file. Looked up from cwd upwards so
 // the CLI works from any subdirectory of the project.
 
-export interface Ai18nConfig {
+export interface I18nAgentConfig {
   source: string;
   targets: string[];
   localesDir: string; // absolute
@@ -16,7 +16,7 @@ export interface Ai18nConfig {
   root: string; // directory containing the config
 }
 
-export const CONFIG_NAMES = ['ai18n.config.yaml', 'ai18n.config.yml'];
+export const CONFIG_NAMES = ['i18n-agent.config.yaml', 'i18n-agent.config.yml'];
 
 export function findConfigPath(cwd: string): string | null {
   let dir = resolve(cwd);
@@ -35,10 +35,10 @@ export function findConfigPath(cwd: string): string | null {
   }
 }
 
-export function loadConfig(cwd: string): Ai18nConfig {
+export function loadConfig(cwd: string): I18nAgentConfig {
   const configPath = findConfigPath(cwd);
   if (!configPath) {
-    throw new Error('ai18n.config.yaml not found — run `ai18n init` in your project root first.');
+    throw new Error('i18n-agent.config.yaml not found — run `i18n-agent init` in your project root first.');
   }
   const root = dirname(configPath);
   const raw = YAML.parse(readFileSync(configPath, 'utf8')) as Record<string, unknown> | null;
@@ -64,10 +64,10 @@ export function loadConfig(cwd: string): Ai18nConfig {
     targets,
     localesDir: resolve(root, typeof raw.locales === 'string' ? raw.locales : 'locales'),
     model: typeof translator.model === 'string' ? translator.model : undefined,
-    contextPath: resolve(root, typeof raw.context === 'string' ? raw.context : 'ai18n.context.yaml'),
+    contextPath: resolve(root, typeof raw.context === 'string' ? raw.context : 'i18n-agent.context.yaml'),
     glossaryPath: resolve(
       root,
-      typeof raw.glossary === 'string' ? raw.glossary : 'ai18n.glossary.yaml',
+      typeof raw.glossary === 'string' ? raw.glossary : 'i18n-agent.glossary.yaml',
     ),
     configPath,
     root,

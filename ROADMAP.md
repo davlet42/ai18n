@@ -1,20 +1,20 @@
-# ai18n roadmap
+# i18n-agent roadmap
 
 ## v0.1 — the engine (week 1)
 
 - [x] Layouts: file-per-lang (`locales/en.json`) and i18next namespaces (`locales/en/common.json`), JSON + YAML, key order preserved
-- [x] **Lockfile** (`ai18n.lock`): sha of source string + sha of written translation per key — diff-sync translates only new/changed keys; repeat run = 0 calls
+- [x] **Lockfile** (`i18n-agent.lock`): sha of source string + sha of written translation per key — diff-sync translates only new/changed keys; repeat run = 0 calls
 - [x] **Manual edits are sacred**: a hand-edited target value is never overwritten; if its source string later changes, the key lands in the `--review` list instead of being silently retranslated
 - [x] **Placeholder guard**: `{var}`, `{{var}}`, printf (`%s`), HTML-ish tags, `$t(...)`, ICU plural/select signatures — post-translation validation with one retry, then keep-original + report
 - [x] Batch translation through the subscription agent (`claude -p`, Haiku tier) — core provider from `@cursor-translate/core`
-- [x] Context file `ai18n.context.yaml` (key path → hint for the translator) — documented in detail
-- [x] Glossary `ai18n.glossary.yaml` (terms to pin or keep untranslated)
+- [x] Context file `i18n-agent.context.yaml` (key path → hint for the translator) — documented in detail
+- [x] Glossary `i18n-agent.glossary.yaml` (terms to pin or keep untranslated)
 - [x] Commands: `init` (detects existing languages, prefills targets), `translate` (`--review`, `--retranslate-stale`), `check` (CI gate), `status`, `add-locale <lang…>` (append to targets + optional immediate translate; missing target files always materialize automatically on `translate`)
-- [x] Metrics + `report` (own ~/.ai18n/metrics.jsonl: volumes, claude -p cost receipts, DeepL-API-equivalent comparison)
+- [x] Metrics + `report` (own ~/.i18n-agent/metrics.jsonl: volumes, claude -p cost receipts, DeepL-API-equivalent comparison)
 
 ## v0.2 — agent surface + distribution (week 2)
 
-- [x] Agent guides: Claude Code skill + Cursor rule — recommendation surface for implementing/maintaining localization via ai18n (shipped in the npm package under agent-skills/)
+- [x] Agent guides: Claude Code skill + Cursor rule — recommendation surface for implementing/maintaining localization via i18n-agent (shipped in the npm package under agent-skills/)
 - [ ] `examples/demo-app` dogfood + e2e on a live subscription
 - [ ] README positioning pass + comparison with DeepL API / Lingo.dev flows
 - [ ] npm publish + GitHub release CI (v* tags)

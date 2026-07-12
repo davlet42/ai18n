@@ -14,7 +14,7 @@ function collectLangFlags(args: string[]): string[] | undefined {
 export async function runTranslate(cwd: string, args: string[]): Promise<number> {
   const config = loadConfig(cwd);
   if (config.targets.length === 0) {
-    console.log('No target languages configured — add some with `ai18n add-locale <lang>`.');
+    console.log('No target languages configured — add some with `i18n-agent add-locale <lang>`.');
     return 0;
   }
   const state = computeSync(config);
@@ -56,7 +56,7 @@ export async function runTranslate(cwd: string, args: string[]): Promise<number>
     `Translated ${result.translated} strings (${result.calls} agent calls) · renamed-migrated: ${result.migrated} · pruned: ${result.pruned} · files written: ${result.writtenFiles.length}`,
   );
   if (result.costUsd !== undefined) {
-    console.log(`Spend receipts: $${result.costUsd.toFixed(4)} (claude -p; ~$0 marginal on a subscription) — see \`ai18n report\`.`);
+    console.log(`Spend receipts: $${result.costUsd.toFixed(4)} (claude -p; ~$0 marginal on a subscription) — see \`i18n-agent report\`.`);
   }
   if (result.failed.length > 0) {
     console.log(`\nFailed (${result.failed.length}) — source text shipped as fallback, will retry next run:`);
@@ -66,7 +66,7 @@ export async function runTranslate(cwd: string, args: string[]): Promise<number>
   }
   if (result.reviews.length > 0) {
     console.log(
-      `\n${result.reviews.length} key(s) await human review (source changed after manual edits) — see \`ai18n translate --review\`.`,
+      `\n${result.reviews.length} key(s) await human review (source changed after manual edits) — see \`i18n-agent translate --review\`.`,
     );
   }
   return result.failed.length > 0 ? 1 : 0;

@@ -22,7 +22,7 @@ const {
 } = await import('../dist/index.js');
 
 function tmp() {
-  return mkdtempSync(join(tmpdir(), 'ai18n-test-'));
+  return mkdtempSync(join(tmpdir(), 'i18n-agent-test-'));
 }
 
 describe('locale-files: layouts and IO', () => {
@@ -104,7 +104,7 @@ describe('planner: three-state key lifecycle', () => {
     let plan = planNamespace({ namespace: NS, lang: LANG, source: src, target: new Map(), lock });
     assert.deepEqual(plan.actions, [{ type: 'translate', key: 'greet', sourceText: 'Hello {name}!' }]);
 
-    // ...ai18n translates and records
+    // ...i18n-agent translates and records
     recordTranslation(lock, keyId(NS, 'greet'), LANG, 'Hello {name}!', 'Привет, {name}!');
     const target = new Map([['greet', 'Привет, {name}!']]);
 
@@ -212,7 +212,7 @@ describe('planner: key rename detection', () => {
 describe('lockfile', () => {
   it('round-trips with sorted keys for clean git diffs', () => {
     const dir = tmp();
-    const path = join(dir, 'ai18n.lock');
+    const path = join(dir, 'i18n-agent.lock');
     const lock = { version: 1, keys: {} };
     recordTranslation(lock, 'common:z', 'ru', 'Z', 'З');
     recordTranslation(lock, 'auth:a', 'ru', 'A', 'А');
@@ -224,13 +224,13 @@ describe('lockfile', () => {
     assert.ok(raw.indexOf('"es"') < raw.indexOf('"ru"'), 'langs sorted');
 
     const back = readLockfile(path);
-    assert.equal(back.keys['auth:a'].targets.ru.by, 'ai18n');
+    assert.equal(back.keys['auth:a'].targets.ru.by, 'machine');
     assert.equal(back.keys['auth:a'].targets.ru.source, sha256('A'), 'source sha tracked per target');
     assert.equal(back.keys['auth:a'].targets.es.source, sha256('A'));
   });
 
   it('returns an empty lockfile when the file is missing', () => {
-    const lock = readLockfile(join(tmp(), 'ai18n.lock'));
+    const lock = readLockfile(join(tmp(), 'i18n-agent.lock'));
     assert.deepEqual(lock, { version: 1, keys: {} });
   });
 });

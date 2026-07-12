@@ -27,7 +27,7 @@ export function runCheck(cwd: string): number {
   }
 
   if (drifted) {
-    console.log('\nRun `ai18n translate` to sync (reviews need a human — see `ai18n translate --review`).');
+    console.log('\nRun `i18n-agent translate` to sync (reviews need a human — see `i18n-agent translate --review`).');
     return 1;
   }
   console.log('All locales in sync.');

@@ -1,10 +1,10 @@
 {
-  "name": "ai18n",
+  "name": "i18n-agent",
   "version": "0.1.0",
   "description": "Locale files translated by the coding-agent subscription you already pay for \u2014 diff-synced via a lockfile, placeholder-safe, manual edits stay sacred. No API keys, no per-word fees.",
   "type": "module",
   "bin": {
-    "ai18n": "dist/cli.js"
+    "i18n-agent": "dist/cli.js"
   },
   "main": "dist/index.js",
   "files": [

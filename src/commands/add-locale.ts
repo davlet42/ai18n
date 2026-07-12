@@ -5,14 +5,14 @@ import { runTranslate } from './translate.js';
 
 const LANG_RE = /^[a-z]{2,3}(-[A-Z]{2})?$/;
 
-// Appends languages to `targets` in ai18n.config.yaml (comments preserved via
+// Appends languages to `targets` in i18n-agent.config.yaml (comments preserved via
 // the YAML document API). Target files materialize on the next `translate` —
 // there is nothing else to create by hand.
 export async function runAddLocale(cwd: string, args: string[]): Promise<number> {
   const translateAfter = args.includes('--translate');
   const langs = args.filter((a) => !a.startsWith('--'));
   if (langs.length === 0) {
-    console.error('Usage: ai18n add-locale <lang> [<lang>…] [--translate]');
+    console.error('Usage: i18n-agent add-locale <lang> [<lang>…] [--translate]');
     return 1;
   }
   const bad = langs.filter((l) => !LANG_RE.test(l));
@@ -23,7 +23,7 @@ export async function runAddLocale(cwd: string, args: string[]): Promise<number>
 
   const configPath = findConfigPath(cwd);
   if (!configPath) {
-    console.error('ai18n.config.yaml not found — run `ai18n init` first.');
+    console.error('i18n-agent.config.yaml not found — run `i18n-agent init` first.');
     return 1;
   }
 
@@ -52,6 +52,6 @@ export async function runAddLocale(cwd: string, args: string[]): Promise<number>
     }
     return runTranslate(cwd, flags);
   }
-  console.log('Files will materialize on the next `ai18n translate`.');
+  console.log('Files will materialize on the next `i18n-agent translate`.');
   return 0;
 }

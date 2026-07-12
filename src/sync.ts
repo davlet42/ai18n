@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import type { Ai18nConfig } from './config.js';
+import type { I18nAgentConfig } from './config.js';
 import { loadContextMap, loadGlossaryTerms } from './context-glossary.js';
 import {
   detectLayout,
@@ -55,9 +55,9 @@ export interface SyncState {
   reviews: ReviewItem[];
 }
 
-export function computeSync(config: Ai18nConfig): SyncState {
+export function computeSync(config: I18nAgentConfig): SyncState {
   const layout = detectLayout(config.localesDir, config.source);
-  const lockPath = join(config.root, 'ai18n.lock');
+  const lockPath = join(config.root, 'i18n-agent.lock');
   const lock = readLockfile(lockPath);
   const namespaces = listNamespaces(layout, config.source);
 
@@ -136,7 +136,7 @@ export interface ApplySyncResult {
 }
 
 export async function applySync(
-  config: Ai18nConfig,
+  config: I18nAgentConfig,
   state: SyncState,
   options: ApplySyncOptions = {},
 ): Promise<ApplySyncResult> {

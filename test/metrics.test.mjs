@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
-process.env.AI18N_HOME = mkdtempSync(join(tmpdir(), 'ai18n-metrics-home-'));
+process.env.I18N_AGENT_HOME = mkdtempSync(join(tmpdir(), 'i18n-agent-metrics-home-'));
 
 const {
   appendRunMetrics,
@@ -90,10 +90,10 @@ describe('receipts flow end-to-end', () => {
     assert.equal(batch.costUsd, 0.005);
 
     // through applySync into the metrics file
-    const root = mkdtempSync(join(tmpdir(), 'ai18n-receipts-proj-'));
+    const root = mkdtempSync(join(tmpdir(), 'i18n-agent-receipts-proj-'));
     mkdirSync(join(root, 'locales', 'en'), { recursive: true });
     writeFileSync(join(root, 'locales', 'en', 'common.json'), '{"hello":"Hello world"}');
-    writeFileSync(join(root, 'ai18n.config.yaml'), 'source: en\ntargets: [ru]\nlocales: locales\n');
+    writeFileSync(join(root, 'i18n-agent.config.yaml'), 'source: en\ntargets: [ru]\nlocales: locales\n');
 
     const config = loadConfig(root);
     const result = await applySync(config, computeSync(config), { transport });

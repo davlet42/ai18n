@@ -20,7 +20,7 @@ function detectLanguages(dir: string): string[] {
   return [...langs].sort();
 }
 
-const CONTEXT_TEMPLATE = `# ai18n.context.yaml — hints for the translator, per key.
+const CONTEXT_TEMPLATE = `# i18n-agent.context.yaml — hints for the translator, per key.
 #
 # WHY: short UI strings translate badly without knowing where they live.
 # "Book" on a button is a verb; in a library app's list it is a noun. A one-line
@@ -44,7 +44,7 @@ const CONTEXT_TEMPLATE = `# ai18n.context.yaml — hints for the translator, per
 # This file is optional; delete it if you don't need it.
 `;
 
-const GLOSSARY_TEMPLATE = `# ai18n.glossary.yaml — terms the translator must respect in every language.
+const GLOSSARY_TEMPLATE = `# i18n-agent.glossary.yaml — terms the translator must respect in every language.
 #
 #   terms:
 #     - MyProductName          # bare term: must stay untranslated
@@ -88,7 +88,7 @@ export function runInit(cwd: string, args: string[]): number {
   }
   const targets = langs.filter((l) => l !== source);
 
-  const config = `# ai18n — locale translation via the coding-agent subscription you already pay for.
+  const config = `# i18n-agent — locale translation via the coding-agent subscription you already pay for.
 # Docs: https://github.com/davlet42/ai18n
 source: ${source}
 targets: [${targets.join(', ')}]
@@ -100,15 +100,15 @@ translator:
   # model: claude-haiku-4-5
 
 # Optional companion files (created with documented templates):
-context: ai18n.context.yaml
-glossary: ai18n.glossary.yaml
+context: i18n-agent.context.yaml
+glossary: i18n-agent.glossary.yaml
 `;
 
   writeFileSync(join(cwd, CONFIG_NAMES[0]), config, 'utf8');
   const templates: string[] = [];
   for (const [name, body] of [
-    ['ai18n.context.yaml', CONTEXT_TEMPLATE],
-    ['ai18n.glossary.yaml', GLOSSARY_TEMPLATE],
+    ['i18n-agent.context.yaml', CONTEXT_TEMPLATE],
+    ['i18n-agent.glossary.yaml', GLOSSARY_TEMPLATE],
   ] as const) {
     if (!existsSync(join(cwd, name))) {
       writeFileSync(join(cwd, name), body, 'utf8');
@@ -116,10 +116,10 @@ glossary: ai18n.glossary.yaml
     }
   }
 
-  console.log(`Created ${CONFIG_NAMES[0]} (source: ${source}, targets: ${targets.join(', ') || '<none — add with `ai18n add-locale`>'})`);
+  console.log(`Created ${CONFIG_NAMES[0]} (source: ${source}, targets: ${targets.join(', ') || '<none — add with `i18n-agent add-locale`>'})`);
   if (templates.length > 0) {
     console.log(`Created ${templates.join(' and ')} template(s) — optional, documented inside.`);
   }
-  console.log('Next: `ai18n translate` — or `ai18n add-locale <lang>` to add a language.');
+  console.log('Next: `i18n-agent translate` — or `i18n-agent add-locale <lang>` to add a language.');
   return 0;
 }

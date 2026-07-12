@@ -6,7 +6,7 @@ import { keyId, sha256, type Lockfile } from './lockfile.js';
 // pair. Executing the plan (translation, file/lock writes) happens elsewhere.
 //
 // Ownership rules (design decision 2026-07-12 — "manual edits are sacred"):
-//   * a target value that does not match what ai18n last wrote belongs to a
+//   * a target value that does not match what i18n-agent last wrote belongs to a
 //     human and is never overwritten;
 //   * a human-owned key whose SOURCE text changed is surfaced for review
 //     instead of being silently retranslated;
@@ -23,7 +23,7 @@ export type KeyAction =
   | { type: 'adopt'; key: string; value: string } // pre-existing/hand value → keep + record as human
   | { type: 'review'; key: string; sourceText: string; currentValue: string }
   | { type: 'copy'; key: string; value: Leaf } // non-string leaf mirrored from source
-  | { type: 'rename'; key: string; fromKey: string; value: string; by: 'ai18n' | 'human' }
+  | { type: 'rename'; key: string; fromKey: string; value: string; by: 'machine' | 'human' }
   | { type: 'prune'; key: string };
 
 export interface NamespacePlan {
@@ -74,7 +74,7 @@ export function planNamespace(options: {
     }
 
     if (!locked) {
-      // Value predates ai18n (first run over an existing project) — adopt it
+      // Value predates i18n-agent (first run over an existing project) — adopt it
       // as human-owned so it is protected from now on.
       actions.push({ type: 'adopt', key, value: targetValue });
       continue;

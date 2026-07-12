@@ -1,4 +1,4 @@
-# ai18n — locale translation via the coding-agent subscription you already pay for.
+# i18n-agent — locale translation via the coding-agent subscription you already pay for.
 # Docs: https://github.com/davlet42/ai18n
 source: en
 targets:
@@ -12,5 +12,5 @@ translator:
   # model: claude-haiku-4-5
 
 # Optional companion files (created with documented templates):
-context: ai18n.context.yaml
-glossary: ai18n.glossary.yaml
+context: i18n-agent.context.yaml
+glossary: i18n-agent.glossary.yaml

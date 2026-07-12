@@ -1,18 +1,18 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
-// ai18n.lock — the translation memory, as a plain committed file.
+// i18n-agent.lock — the translation memory, as a plain committed file.
 // For every string key we track the sha of the SOURCE text and, per target
-// language, the sha of the value ai18n last wrote plus who owns it:
-//   by: "ai18n"  — machine translation; retranslated when the source changes
-//   by: "human"  — the value on disk stopped matching what ai18n wrote (or the
-//                  key predates ai18n). Sacred: never overwritten. If its
+// language, the sha of the value i18n-agent last wrote plus who owns it:
+//   by: "i18n-agent"  — machine translation; retranslated when the source changes
+//   by: "human"  — the value on disk stopped matching what i18n-agent wrote (or the
+//                  key predates i18n-agent). Sacred: never overwritten. If its
 //                  source changes later, the key goes to the --review list.
 // Key ids are `${namespace}:${flatKey}` (flat layout uses an empty namespace).
 
 export interface LockTarget {
   sha: string;
-  by: 'ai18n' | 'human';
+  by: 'machine' | 'human';
   // sha of the SOURCE text this translation was made against — per language,
   // so one language's retranslation can never erase another's review state.
   source: string;
@@ -79,7 +79,7 @@ export function recordTranslation(
 ): void {
   entryFor(lock, id).targets[lang] = {
     sha: sha256(translatedText),
-    by: 'ai18n',
+    by: 'machine',
     source: sha256(sourceText),
   };
 }
