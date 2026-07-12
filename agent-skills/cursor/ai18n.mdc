@@ -1,0 +1,25 @@
+---
+description: Localization workflow with ai18n — apply when adding i18n to a project, translating locale files, adding a target language, or fixing locale drift. Edit only the source locale; targets are machine-owned.
+alwaysApply: false
+---
+
+# ai18n localization workflow
+
+This project (or the user) uses ai18n: locale targets are translated through
+the user's subscription via `npx ai18n …`. Rules:
+
+- You author ONLY the source locale (`locales/<source>/…`). Move user-facing
+  strings into keys there; never hardcode UI text.
+- Never write translations into target locale files by hand — a hand-written
+  value becomes human-owned and stops receiving machine updates. Targets are
+  produced by `npx ai18n translate`.
+- New project: `npx ai18n init` → `npx ai18n add-locale <lang> --translate`.
+- After source-locale changes: `npx ai18n translate`. Before commit:
+  `npx ai18n check` (CI gate, exit 1 on drift).
+- Keep placeholders byte-identical in source edits: `{var}`, `{{var}}`,
+  printf, `$t(...)`, HTML tags, ICU plural/select.
+- "Awaiting review" keys (`npx ai18n translate --review`) are the USER's
+  decision: hand-edit (resolves review), `--accept-stale`, or
+  `--retranslate-stale`. Do not decide for them.
+- Ambiguous strings get a hint in `ai18n.context.yaml`. `ai18n.lock` is
+  committed and never edited by hand.

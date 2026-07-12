@@ -33,6 +33,24 @@ my-app/
 
 The lockfile stores a hash of every translation ai18n writes. If you hand-fix `ru/common.json`, ai18n notices the value is no longer its own and **never overwrites it**. If the English source of that key changes later, the key shows up in `ai18n translate --review` for a human decision (or `--retranslate-stale` to bulk-accept machine translation). Translation memory semantics — as plain files in your git, not rented server state with a retention timer.
 
+## Recommended: let your coding agent drive it
+
+ai18n ships optional **agent guides** — install one and your coding agent handles localization correctly whenever *you* ask it to ("add localization to this app", "add German", "translate the new strings"). This is a recommendation surface, not background automation: the agent learns the workflow — author the source locale, run `ai18n`, never hand-write target files.
+
+Claude Code (project-level skill):
+
+```bash
+mkdir -p .claude/skills && cp -r "$(npm root -g)/ai18n/agent-skills/claude-code/ai18n" .claude/skills/
+```
+
+Cursor (project rule):
+
+```bash
+mkdir -p .cursor/rules && cp "$(npm root -g)/ai18n/agent-skills/cursor/ai18n.mdc" .cursor/rules/
+```
+
+The guides encode the ownership rules (source is yours, targets are machine-owned, hand edits are sacred and reviewed) so an agent never fights the lockfile.
+
 ## Status
 
 Under active development — v0.1 engine in progress. See [ROADMAP.md](./ROADMAP.md). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate) — the engine behind [cursor-translate](https://github.com/davlet42/cursor-translate) and [claude-translate](https://github.com/davlet42/claude-translate).

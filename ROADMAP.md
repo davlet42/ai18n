@@ -14,7 +14,7 @@
 
 ## v0.2 — agent surface + distribution (week 2)
 
-- [ ] Claude Code skill `/translate-locales` + Cursor rule (locales stay in sync while an agent builds features)
+- [x] Agent guides: Claude Code skill + Cursor rule — recommendation surface for implementing/maintaining localization via ai18n (shipped in the npm package under agent-skills/)
 - [ ] `examples/demo-app` dogfood + e2e on a live subscription
 - [ ] README positioning pass + comparison with DeepL API / Lingo.dev flows
 - [ ] npm publish + GitHub release CI (v* tags)
