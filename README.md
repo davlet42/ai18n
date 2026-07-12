@@ -8,6 +8,17 @@ npx ai18n translate   # en.json → ru.json, es.json, de.json — via `claude -p
 
 The idea: modern coding agents (Claude Code, Cursor) run on subscriptions that already include a cheap model tier. ai18n batches your untranslated locale strings and pipes them through a headless agent call (`claude -p --model haiku`) — so keeping 10 languages in sync costs you **$0 on top of the subscription you already have**. Prefer API keys or CI without a subscription? A provider switch away.
 
+## Quick start
+
+```bash
+npm install -g ai18n            # or npx ai18n …
+cd your-app
+ai18n init                      # detects locales/, writes config + documented templates
+ai18n add-locale ru es --translate
+ai18n check                     # CI gate: exit 1 on drift
+ai18n report --days 7           # volumes, real cost receipts, DeepL-API equivalent
+```
+
 ## How it works
 
 ```
@@ -53,13 +64,24 @@ The guides encode the ownership rules (source is yours, targets are machine-owne
 
 ## Status
 
-Under active development — v0.1 engine in progress. See [ROADMAP.md](./ROADMAP.md). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate) — the engine behind [cursor-translate](https://github.com/davlet42/cursor-translate) and [claude-translate](https://github.com/davlet42/claude-translate).
+**v0.1 engine complete and live-verified** (2026-07-12): 20-string demo translated to ru+es in 2 agent calls through a Claude Max subscription; repeat runs cost 0 calls; ICU plurals, glossary pinning, rename migration and the review flow verified end-to-end. 33/33 tests. See [ROADMAP.md](./ROADMAP.md) for what's next (`/i18nify` is coming). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate) — the engine behind [cursor-translate](https://github.com/davlet42/cursor-translate) and [claude-translate](https://github.com/davlet42/claude-translate).
 
 ## Honest economics
 
 - Translation runs on your **subscription's cheap tier** (Haiku-class): a 2,000-string app × 10 languages ≈ a few dollars of API money — or ~$0 marginal under a Claude Max plan.
 - ai18n stores nothing server-side because there is no server. The "translation memory" is `ai18n.lock` + your locale files, in your repo, forever.
 - What ai18n does **not** do: no TMS dashboard, no review workflow UI (use `--review` + git diff), no code extraction (your source locale is authored — by you or your coding agent; see `/i18nify` on the roadmap).
+
+Every run logs volumes and real `claude -p` cost receipts — pull your own numbers:
+
+```
+$ ai18n report --days 7
+ai18n report — last 7 day(s), project "demo-app"
+  runs: 2 · strings translated: 2 (failed: 0) · agent calls: 2
+  volume: 24 source chars → 34 translated chars
+  spend: $0.0040 (claude -p receipts; ~$0 marginal on a subscription)
+  DeepL API equivalent for the same volume: ~$0.00 (@ $25/M chars)
+```
 
 ## License
 
