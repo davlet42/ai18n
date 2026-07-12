@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased (v0.1 engine — week 1 complete)
+## 0.1.0 (2026-07-12)
 
 - **Engine**: locale IO (flat + i18next namespaces, JSON/YAML, key order preserved), lockfile with per-language source shas and ownership (`ai18n`/`human`), sync planner with the full key lifecycle: translate / keep / retranslate / adopt / review / rename-migrate / prune.
 - **Manual edits are sacred**: hand edits are never overwritten; editing a value resolves its review; `--accept-stale` accepts current values against a changed source; `--retranslate-stale` machine-translates them.
