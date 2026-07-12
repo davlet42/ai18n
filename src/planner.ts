@@ -10,7 +10,10 @@ import { keyId, sha256, type Lockfile } from './lockfile.js';
 //     human and is never overwritten;
 //   * a human-owned key whose SOURCE text changed is surfaced for review
 //     instead of being silently retranslated;
-//   * keys that exist in the target but not in the source are pruned;
+//   * keys that exist in the target but not in the source are pruned —
+//     UNLESS an untranslated source key has the exact same source text (sha
+//     match in the lockfile): that is a key RENAME, and the existing
+//     translation migrates to the new key together with its ownership;
 //   * non-string leaves mirror the source verbatim.
 
 export type KeyAction =
@@ -20,6 +23,7 @@ export type KeyAction =
   | { type: 'adopt'; key: string; value: string } // pre-existing/hand value → keep + record as human
   | { type: 'review'; key: string; sourceText: string; currentValue: string }
   | { type: 'copy'; key: string; value: Leaf } // non-string leaf mirrored from source
+  | { type: 'rename'; key: string; fromKey: string; value: string; by: 'ai18n' | 'human' }
   | { type: 'prune'; key: string };
 
 export interface NamespacePlan {
@@ -35,6 +39,7 @@ export interface PlanCounts {
   adopt: number;
   review: number;
   copy: number;
+  rename: number;
   prune: number;
 }
 
@@ -94,10 +99,37 @@ export function planNamespace(options: {
     }
   }
 
+  // Prune pass with rename detection: a removed key whose lockfile source sha
+  // matches a to-be-translated key's text is a rename — migrate, don't retranslate.
+  const pruneCandidates: string[] = [];
   for (const key of target.keys()) {
     if (!source.has(key)) {
-      actions.push({ type: 'prune', key });
+      pruneCandidates.push(key);
     }
+  }
+
+  for (const oldKey of pruneCandidates) {
+    const oldEntry = lock.keys[keyId(namespace, oldKey)];
+    const oldValue = target.get(oldKey);
+    let migrated = false;
+    if (oldEntry && typeof oldValue === 'string' && oldValue !== '') {
+      const idx = actions.findIndex(
+        (a) => a.type === 'translate' && sha256(a.sourceText) === oldEntry.source,
+      );
+      if (idx !== -1) {
+        const translateAction = actions[idx] as { type: 'translate'; key: string; sourceText: string };
+        actions[idx] = {
+          type: 'rename',
+          key: translateAction.key,
+          fromKey: oldKey,
+          value: oldValue,
+          by: oldEntry.targets[lang]?.by ?? 'human',
+        };
+        migrated = true;
+      }
+    }
+    actions.push({ type: 'prune', key: oldKey });
+    void migrated;
   }
 
   return { namespace, lang, actions };
@@ -111,6 +143,7 @@ export function countPlan(plans: NamespacePlan[]): PlanCounts {
     adopt: 0,
     review: 0,
     copy: 0,
+    rename: 0,
     prune: 0,
   };
   for (const plan of plans) {

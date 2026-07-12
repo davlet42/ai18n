@@ -163,6 +163,47 @@ describe('planner: three-state key lifecycle', () => {
   });
 });
 
+describe('planner: key rename detection', () => {
+  it('migrates a human-polished translation to the renamed key instead of pruning it', () => {
+    const lock = { version: 1, keys: {} };
+    const { recordHumanValue } = awaitImportCache;
+    // key auth.signin was translated and then hand-polished
+    recordHumanValue(lock, keyId('auth', 'signin'), 'ru', 'Sign in', 'Войти в систему');
+
+    // dev renames signin → login in the source, text unchanged
+    const plan = planNamespace({
+      namespace: 'auth',
+      lang: 'ru',
+      source: new Map([['login', 'Sign in']]),
+      target: new Map([['signin', 'Войти в систему']]),
+      lock,
+    });
+
+    const rename = plan.actions.find((a) => a.type === 'rename');
+    assert.ok(rename, 'rename detected instead of translate');
+    assert.equal(rename.key, 'login');
+    assert.equal(rename.fromKey, 'signin');
+    assert.equal(rename.value, 'Войти в систему');
+    assert.equal(rename.by, 'human', 'ownership survives the rename');
+    assert.ok(plan.actions.some((a) => a.type === 'prune' && a.key === 'signin'), 'old key still pruned');
+    assert.ok(!plan.actions.some((a) => a.type === 'translate'), 'no machine retranslation');
+  });
+
+  it('does not fake a rename when texts differ — translates the new key, prunes the old', () => {
+    const lock = { version: 1, keys: {} };
+    recordTranslation(lock, keyId('auth', 'signin'), 'ru', 'Sign in', 'Войти');
+    const plan = planNamespace({
+      namespace: 'auth',
+      lang: 'ru',
+      source: new Map([['login', 'Log in']]),
+      target: new Map([['signin', 'Войти']]),
+      lock,
+    });
+    const types = plan.actions.map((a) => a.type).sort();
+    assert.deepEqual(types, ['prune', 'translate']);
+  });
+});
+
 describe('lockfile', () => {
   it('round-trips with sorted keys for clean git diffs', () => {
     const dir = tmp();
