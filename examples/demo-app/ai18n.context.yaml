@@ -1,0 +1,5 @@
+common:
+  greeting: "{name} is the user's first name"
+  search.placeholder: "Input placeholder in the top search bar, keep short"
+auth:
+  login.button: "Button label — the verb, keep short"

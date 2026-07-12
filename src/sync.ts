@@ -119,6 +119,7 @@ export function computeSync(config: Ai18nConfig): SyncState {
 export interface ApplySyncOptions {
   transport?: BatchTransport; // tests inject; default = subscription agent
   retranslateStale?: boolean; // also machine-translate `review` keys
+  acceptStale?: boolean; // accept reviewed values as-is against the new source
   langs?: string[]; // subset of config.targets
 }
 
@@ -148,7 +149,10 @@ export async function applySync(
     migrated: 0,
     pruned: 0,
     failed: [],
-    reviews: options.retranslateStale ? [] : state.reviews.filter((r) => langs.includes(r.lang)),
+    reviews:
+      options.retranslateStale || options.acceptStale
+        ? []
+        : state.reviews.filter((r) => langs.includes(r.lang)),
     calls: 0,
   };
 
@@ -230,6 +234,13 @@ export async function applySync(
             break;
           }
           case 'review': {
+            if (options.acceptStale) {
+              // Human confirmed the current value is still right for the new
+              // source — re-adopt it against the new source sha.
+              values.set(action.key, action.currentValue);
+              recordHumanValue(state.lock, id, lang, action.sourceText, action.currentValue);
+              break;
+            }
             if (options.retranslateStale) {
               const translated = batch.translations.get(id);
               if (translated !== undefined) {

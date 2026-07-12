@@ -105,11 +105,21 @@ glossary: ai18n.glossary.yaml
 `;
 
   writeFileSync(join(cwd, CONFIG_NAMES[0]), config, 'utf8');
-  writeFileSync(join(cwd, 'ai18n.context.yaml'), CONTEXT_TEMPLATE, 'utf8');
-  writeFileSync(join(cwd, 'ai18n.glossary.yaml'), GLOSSARY_TEMPLATE, 'utf8');
+  const templates: string[] = [];
+  for (const [name, body] of [
+    ['ai18n.context.yaml', CONTEXT_TEMPLATE],
+    ['ai18n.glossary.yaml', GLOSSARY_TEMPLATE],
+  ] as const) {
+    if (!existsSync(join(cwd, name))) {
+      writeFileSync(join(cwd, name), body, 'utf8');
+      templates.push(name);
+    }
+  }
 
   console.log(`Created ${CONFIG_NAMES[0]} (source: ${source}, targets: ${targets.join(', ') || '<none — add with `ai18n add-locale`>'})`);
-  console.log('Created ai18n.context.yaml and ai18n.glossary.yaml templates (both optional, documented inside).');
+  if (templates.length > 0) {
+    console.log(`Created ${templates.join(' and ')} template(s) — optional, documented inside.`);
+  }
   console.log('Next: `ai18n translate` — or `ai18n add-locale <lang>` to add a language.');
   return 0;
 }

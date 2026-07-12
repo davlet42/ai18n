@@ -1,0 +1,11 @@
+{
+  "appName": "TaskFlow",
+  "greeting": "С возвращением, {name}!",
+  "search": {
+    "placeholder": "Поиск задач…",
+    "empty": "Ничего не найдено для \"{query}\""
+  },
+  "files": "{count, plural, one {# файл} other {# файлов}}",
+  "footer": "Сделано с <b>TaskFlow</b>",
+  "version": 3
+}

@@ -30,7 +30,9 @@ export async function runTranslate(cwd: string, args: string[]): Promise<number>
       console.log(`    source now: ${r.sourceText}`);
       console.log(`    your value: ${r.currentValue}`);
     }
-    console.log('\nEdit the values by hand, or run `ai18n translate --retranslate-stale` to machine-translate them.');
+    console.log(
+      '\nResolve by: editing the value by hand (the edit clears the review), `--accept-stale` (current values are still right), or `--retranslate-stale` (machine-translate anew).',
+    );
     return 0;
   }
 
@@ -46,6 +48,7 @@ export async function runTranslate(cwd: string, args: string[]): Promise<number>
 
   const result = await applySync(config, state, {
     retranslateStale: args.includes('--retranslate-stale'),
+    acceptStale: args.includes('--accept-stale'),
     langs: collectLangFlags(args),
   });
 

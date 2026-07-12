@@ -130,6 +130,11 @@ describe('planner: three-state key lifecycle', () => {
     plan = planNamespace({ namespace: NS, lang: LANG, source: src2, target: edited, lock });
     assert.equal(plan.actions[0].type, 'review');
     assert.equal(plan.actions[0].currentValue, 'Здравствуйте, {name}!');
+
+    // 6) the human edits the value again — that IS the review action → adopt
+    const reReviewed = new Map([['greet', 'Здравствуйте же, {name}!']]);
+    plan = planNamespace({ namespace: NS, lang: LANG, source: src2, target: reReviewed, lock });
+    assert.equal(plan.actions[0].type, 'adopt', 'editing the value resolves the review');
   });
 
   it('adopts pre-existing translations on first run (no lock entry)', () => {

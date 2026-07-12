@@ -80,13 +80,21 @@ export function planNamespace(options: {
       continue;
     }
 
-    const humanEdited = locked.by === 'human' || locked.sha !== sha256(targetValue);
+    const valueChanged = locked.sha !== sha256(targetValue);
 
-    if (humanEdited) {
+    if (valueChanged) {
+      // The value was touched since our last record — a fresh human edit. It
+      // wins unconditionally and also RESOLVES a pending review: editing the
+      // value is the review action.
+      actions.push({ type: 'adopt', key, value: targetValue });
+      continue;
+    }
+
+    if (locked.by === 'human') {
       if (sourceChanged) {
         actions.push({ type: 'review', key, sourceText: sourceValue, currentValue: targetValue });
       } else {
-        actions.push({ type: 'adopt', key, value: targetValue });
+        actions.push({ type: 'keep', key, value: targetValue });
       }
       continue;
     }

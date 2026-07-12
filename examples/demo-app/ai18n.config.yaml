@@ -1,0 +1,16 @@
+# ai18n — locale translation via the coding-agent subscription you already pay for.
+# Docs: https://github.com/davlet42/ai18n
+source: en
+targets:
+  - ru
+  - es
+locales: locales
+
+translator:
+  # Default backend spawns `claude -p` on the cheap tier of your Claude
+  # subscription — no API keys. Override the model if you want:
+  # model: claude-haiku-4-5
+
+# Optional companion files (created with documented templates):
+context: ai18n.context.yaml
+glossary: ai18n.glossary.yaml
