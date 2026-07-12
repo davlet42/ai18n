@@ -1,7 +1,7 @@
 {
   "name": "i18n-agent",
   "version": "0.3.0",
-  "description": "Locale files translated by the coding-agent subscription you already pay for \u2014 diff-synced via a lockfile, placeholder-safe, manual edits stay sacred. No API keys, no per-word fees.",
+  "description": "Locale files translated by the coding-agent subscription you already pay for — diff-synced via a lockfile, placeholder-safe, manual edits stay sacred. No API keys, no per-word fees.",
   "type": "module",
   "bin": {
     "i18n-agent": "dist/cli.js"
@@ -30,7 +30,10 @@
     "node": ">=20"
   },
   "license": "MIT",
-  "repository": "https://github.com/davlet42/ai18n",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davlet42/ai18n.git"
+  },
   "keywords": [
     "i18n",
     "localization",
