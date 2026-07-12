@@ -23,3 +23,19 @@ export type { Lockfile, LockEntry, LockTarget } from './lockfile.js';
 
 export { planNamespace, countPlan } from './planner.js';
 export type { KeyAction, NamespacePlan, PlanCounts } from './planner.js';
+
+export { extractPlaceholderSignature, validatePlaceholders } from './placeholders.js';
+export type { PlaceholderValidation } from './placeholders.js';
+
+export {
+  translateBatch,
+  chunkItems,
+  buildSystemPrompt,
+  claudeCliTransport,
+} from './translate-batch.js';
+export type {
+  BatchItem,
+  BatchTransport,
+  TranslateBatchOptions,
+  TranslateBatchResult,
+} from './translate-batch.js';
