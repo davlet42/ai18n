@@ -39,3 +39,11 @@ export type {
   TranslateBatchOptions,
   TranslateBatchResult,
 } from './translate-batch.js';
+
+export { loadConfig, findConfigPath, CONFIG_NAMES } from './config.js';
+export type { Ai18nConfig } from './config.js';
+
+export { loadContextMap, loadGlossaryTerms } from './context-glossary.js';
+
+export { computeSync, applySync } from './sync.js';
+export type { SyncState, ApplySyncOptions, ApplySyncResult, ReviewItem } from './sync.js';

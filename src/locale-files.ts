@@ -118,10 +118,15 @@ export function flattenTree(tree: LocaleTree, prefix = ''): Map<string, Leaf> {
 }
 
 // Rebuild a target tree that mirrors the source's structure and key order.
-// String leaves take their value from `values` (falling back to the source
-// text — i.e. untranslated); non-string leaves are copied verbatim.
+// String leaves take their value from `values`; a string leaf WITHOUT a value
+// is OMITTED — a failed translation must not ship the source text as a fake
+// translation (runtime falls back via the i18n library, and the next run
+// retries the key). Non-string leaves are copied verbatim by the caller
+// through `values`. Containers left empty by omission are dropped.
 export function buildTargetTree(source: LocaleTree, values: Map<string, Leaf>, prefix = ''): LocaleTree {
   if (Array.isArray(source)) {
+    // Arrays keep positions: a missing translation would shift indices, so
+    // array slots fall back to the source text instead of omission.
     return source.map((v, i) => {
       const key = prefix ? `${prefix}.${i}` : String(i);
       if (isLeaf(v)) {
@@ -134,9 +139,22 @@ export function buildTargetTree(source: LocaleTree, values: Map<string, Leaf>, p
   for (const [k, v] of Object.entries(source)) {
     const key = prefix ? `${prefix}.${k}` : k;
     if (isLeaf(v)) {
-      out[k] = typeof v === 'string' ? ((values.get(key) ?? v) as Leaf) : v;
+      if (typeof v === 'string') {
+        const value = values.get(key);
+        if (value !== undefined) {
+          out[k] = value;
+        }
+      } else {
+        out[k] = v;
+      }
     } else {
-      out[k] = buildTargetTree(v as LocaleTree, values, key);
+      const child = buildTargetTree(v as LocaleTree, values, key);
+      const empty =
+        (Array.isArray(child) && child.length === 0) ||
+        (!Array.isArray(child) && Object.keys(child).length === 0);
+      if (!empty || (Array.isArray(v) ? v.length === 0 : Object.keys(v).length === 0)) {
+        out[k] = child;
+      }
     }
   }
   return out;

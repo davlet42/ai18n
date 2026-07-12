@@ -64,10 +64,9 @@ export function planNamespace(options: {
     }
 
     const id = keyId(namespace, key);
-    const entry = lock.keys[id];
-    const locked = entry?.targets[lang];
+    const locked = lock.keys[id]?.targets[lang];
     const targetValue = target.get(key);
-    const sourceChanged = entry ? entry.source !== sha256(sourceValue) : false;
+    const sourceChanged = locked ? locked.source !== sha256(sourceValue) : false;
 
     if (targetValue === undefined || typeof targetValue !== 'string' || targetValue === '') {
       actions.push({ type: 'translate', key, sourceText: sourceValue });
@@ -109,12 +108,11 @@ export function planNamespace(options: {
   }
 
   for (const oldKey of pruneCandidates) {
-    const oldEntry = lock.keys[keyId(namespace, oldKey)];
+    const oldLocked = lock.keys[keyId(namespace, oldKey)]?.targets[lang];
     const oldValue = target.get(oldKey);
-    let migrated = false;
-    if (oldEntry && typeof oldValue === 'string' && oldValue !== '') {
+    if (oldLocked && typeof oldValue === 'string' && oldValue !== '') {
       const idx = actions.findIndex(
-        (a) => a.type === 'translate' && sha256(a.sourceText) === oldEntry.source,
+        (a) => a.type === 'translate' && sha256(a.sourceText) === oldLocked.source,
       );
       if (idx !== -1) {
         const translateAction = actions[idx] as { type: 'translate'; key: string; sourceText: string };
@@ -123,13 +121,11 @@ export function planNamespace(options: {
           key: translateAction.key,
           fromKey: oldKey,
           value: oldValue,
-          by: oldEntry.targets[lang]?.by ?? 'human',
+          by: oldLocked.by,
         };
-        migrated = true;
       }
     }
     actions.push({ type: 'prune', key: oldKey });
-    void migrated;
   }
 
   return { namespace, lang, actions };

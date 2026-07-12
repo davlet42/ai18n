@@ -220,7 +220,8 @@ describe('lockfile', () => {
 
     const back = readLockfile(path);
     assert.equal(back.keys['auth:a'].targets.ru.by, 'ai18n');
-    assert.equal(back.keys['auth:a'].source, sha256('A'));
+    assert.equal(back.keys['auth:a'].targets.ru.source, sha256('A'), 'source sha tracked per target');
+    assert.equal(back.keys['auth:a'].targets.es.source, sha256('A'));
   });
 
   it('returns an empty lockfile when the file is missing', () => {

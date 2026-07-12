@@ -13,10 +13,12 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 export interface LockTarget {
   sha: string;
   by: 'ai18n' | 'human';
+  // sha of the SOURCE text this translation was made against — per language,
+  // so one language's retranslation can never erase another's review state.
+  source: string;
 }
 
 export interface LockEntry {
-  source: string;
   targets: { [lang: string]: LockTarget };
 }
 
@@ -53,18 +55,17 @@ export function writeLockfile(path: string, lock: Lockfile): void {
     for (const lang of Object.keys(entry.targets).sort()) {
       targets[lang] = entry.targets[lang];
     }
-    sorted.keys[id] = { source: entry.source, targets };
+    sorted.keys[id] = { targets };
   }
   writeFileSync(path, `${JSON.stringify(sorted, null, 2)}\n`, 'utf8');
 }
 
-function entryFor(lock: Lockfile, id: string, sourceText: string): LockEntry {
+function entryFor(lock: Lockfile, id: string): LockEntry {
   const existing = lock.keys[id];
   if (existing) {
-    existing.source = sha256(sourceText);
     return existing;
   }
-  const fresh: LockEntry = { source: sha256(sourceText), targets: {} };
+  const fresh: LockEntry = { targets: {} };
   lock.keys[id] = fresh;
   return fresh;
 }
@@ -76,7 +77,11 @@ export function recordTranslation(
   sourceText: string,
   translatedText: string,
 ): void {
-  entryFor(lock, id, sourceText).targets[lang] = { sha: sha256(translatedText), by: 'ai18n' };
+  entryFor(lock, id).targets[lang] = {
+    sha: sha256(translatedText),
+    by: 'ai18n',
+    source: sha256(sourceText),
+  };
 }
 
 // Adopt a value we did not write (pre-existing translation or a hand edit).
@@ -87,7 +92,11 @@ export function recordHumanValue(
   sourceText: string,
   targetText: string,
 ): void {
-  entryFor(lock, id, sourceText).targets[lang] = { sha: sha256(targetText), by: 'human' };
+  entryFor(lock, id).targets[lang] = {
+    sha: sha256(targetText),
+    by: 'human',
+    source: sha256(sourceText),
+  };
 }
 
 export function pruneKey(lock: Lockfile, id: string, lang?: string): void {
