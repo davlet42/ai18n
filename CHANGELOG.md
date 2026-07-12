@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- CI: auto-publish covers both packages (`i18n-agent`, `i18n-agent-nest`) with skip-if-published guards — either can release independently without red runs.
+- nest: depends on the published `i18n-agent@^0.3.0` (registry) instead of the local file link.
+
 ## 0.3.0 (2026-07-12)
 
 **Self-hosted delivery** — the same artifacts, served by YOUR backend (no third-party cloud):
@@ -25,7 +30,7 @@
 - Docs: removed subscription-tier mentions — works on any plan; npm README refreshed.
 - First release through GitHub Actions auto-publish (NPM_TOKEN wired).
 
-## Unreleased (v0.1 engine — week 1 complete)
+## 0.1.0 (2026-07-12)
 
 - **Engine**: locale IO (flat + i18next namespaces, JSON/YAML, key order preserved), lockfile with per-language source shas and ownership (`i18n-agent`/`human`), sync planner with the full key lifecycle: translate / keep / retranslate / adopt / review / rename-migrate / prune.
 - **Manual edits are sacred**: hand edits are never overwritten; editing a value resolves its review; `--accept-stale` accepts current values against a changed source; `--retranslate-stale` machine-translates them.
