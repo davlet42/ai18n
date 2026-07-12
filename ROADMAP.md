@@ -9,7 +9,7 @@
 - [ ] Batch translation through the subscription agent (`claude -p`, Haiku tier) — core provider from `@cursor-translate/core`
 - [ ] Context file `ai18n.context.yaml` (key path → hint for the translator) — documented in detail
 - [ ] Glossary `ai18n.glossary.yaml` (terms to pin or keep untranslated)
-- [ ] Commands: `init`, `translate` (`--review`, `--retranslate-stale`), `check` (CI gate), `status`
+- [ ] Commands: `init` (detects existing languages, prefills targets), `translate` (`--review`, `--retranslate-stale`), `check` (CI gate), `status`, `add-locale <lang…>` (append to targets + optional immediate translate; missing target files always materialize automatically on `translate`)
 - [ ] Metrics + `report` (reuse core metrics: volumes, real cost receipts)
 
 ## v0.2 — agent surface + distribution (week 2)
