@@ -8,5 +8,5 @@
 - **Placeholder guard**: signature validation for `{var}`/`{{var}}`/printf/`$t()`/HTML tags/ICU plural-select (categories + inner tokens + `#`), corrective per-item retry, then keep-source + report.
 - **Batch translator** through the subscription agent (`claude -p`, Haiku tier) via `@cursor-translate/core`; failed keys are omitted from targets (runtime falls back, next run retries) — never shipped as fake translations.
 - **CLI**: `init` (layout/language detection, documented context+glossary templates, never clobbers existing files), `translate` (`--dry-run`/`--review`/`--accept-stale`/`--retranslate-stale`/`--lang`), `check` (CI gate), `status`, `add-locale --translate`.
-- **Live e2e passed** (2026-07-12): 20 strings → ru+es in 2 agent calls through a Claude Max subscription; repeat run = 0 calls; glossary term untranslated; ICU plurals translated inside, structure intact; review flow verified end-to-end. 30/30 tests.
+- **Live e2e passed** (2026-07-12): 20 strings → ru+es in 2 agent calls through the subscription; repeat run = 0 calls; glossary term untranslated; ICU plurals translated inside, structure intact; review flow verified end-to-end. 30/30 tests.
 - Project scaffolded: design locked 2026-07-12 (namespaces in v1, manual edits sacred, separate context file, name `i18n-agent`). See ROADMAP.md.

@@ -3,10 +3,10 @@
 **Your locale files, translated by the coding-agent subscription you already pay for.** No API keys, no per-word fees, no cloud. Diff-synced through a lockfile, placeholder-safe, and your manual edits are never overwritten.
 
 ```bash
-npx i18n-agent translate   # en.json → ru.json, es.json, de.json — via `claude -p` on your Max plan
+npx i18n-agent translate   # en.json → ru.json, es.json, de.json — via `claude -p` on your subscription
 ```
 
-The idea: modern coding agents (Claude Code, Cursor) run on subscriptions that already include a cheap model tier. i18n-agent batches your untranslated locale strings and pipes them through a headless agent call (`claude -p --model haiku`) — so keeping 10 languages in sync costs you **$0 on top of the subscription you already have**. Prefer API keys or CI without a subscription? A provider switch away.
+The idea: modern coding agents run on subscriptions that already include a cheap model tier. i18n-agent batches your untranslated locale strings and pipes them through a headless agent call (`claude -p --model haiku`) — so keeping 10 languages in sync costs you **$0 on top of the subscription you already have**. Prefer API keys or CI without a subscription? A provider switch away.
 
 ## Quick start
 
@@ -64,11 +64,11 @@ The guides encode the ownership rules (source is yours, targets are machine-owne
 
 ## Status
 
-**v0.1 engine complete and live-verified** (2026-07-12): 20-string demo translated to ru+es in 2 agent calls through a Claude Max subscription; repeat runs cost 0 calls; ICU plurals, glossary pinning, rename migration and the review flow verified end-to-end. 33/33 tests. See [ROADMAP.md](./ROADMAP.md) for what's next (`/i18nify` is coming). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate) — the engine behind [cursor-translate](https://github.com/davlet42/cursor-translate) and [claude-translate](https://github.com/davlet42/claude-translate).
+**v0.1 engine complete and live-verified** (2026-07-12): 20-string demo translated to ru+es in 2 agent calls through the subscription; repeat runs cost 0 calls; ICU plurals, glossary pinning, rename migration and the review flow verified end-to-end. 33/33 tests. See [ROADMAP.md](./ROADMAP.md) for what's next (`/i18nify` is coming). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate) — the engine behind [cursor-translate](https://github.com/davlet42/cursor-translate) and [claude-translate](https://github.com/davlet42/claude-translate).
 
 ## Honest economics
 
-- Translation runs on your **subscription's cheap tier** (Haiku-class): a 2,000-string app × 10 languages ≈ a few dollars of API money — or ~$0 marginal under a Claude Max plan.
+- Translation runs on your **subscription's cheap tier** (Haiku-class): a 2,000-string app × 10 languages ≈ a few dollars of API money — or ~$0 marginal on the subscription you already have.
 - i18n-agent stores nothing server-side because there is no server. The "translation memory" is `i18n-agent.lock` + your locale files, in your repo, forever.
 - What i18n-agent does **not** do: no TMS dashboard, no review workflow UI (use `--review` + git diff), no code extraction (your source locale is authored — by you or your coding agent; see `/i18nify` on the roadmap).
 
