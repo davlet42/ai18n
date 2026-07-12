@@ -14,6 +14,7 @@ export interface I18nAgentConfig {
   glossaryPath: string; // absolute; may not exist
   configPath: string; // absolute
   root: string; // directory containing the config
+  exportsRaw: unknown; // `exports:` section, parsed by the export command
 }
 
 export const CONFIG_NAMES = ['i18n-agent.config.yaml', 'i18n-agent.config.yml'];
@@ -71,5 +72,6 @@ export function loadConfig(cwd: string): I18nAgentConfig {
     ),
     configPath,
     root,
+    exportsRaw: raw.exports,
   };
 }

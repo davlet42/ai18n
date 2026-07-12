@@ -44,6 +44,27 @@ my-app/
 
 The lockfile stores a hash of every translation i18n-agent writes. If you hand-fix `ru/common.json`, i18n-agent notices the value is no longer its own and **never overwrites it**. If the English source of that key changes later, the key shows up in `i18n-agent translate --review` for a human decision (or `--retranslate-stale` to bulk-accept machine translation). Translation memory semantics — as plain files in your git, not rented server state with a retention timer.
 
+## Multi-platform export: one source, native locales everywhere
+
+Your product has web, Android and iOS? Keep ONE canonical set of locales (typically next to the backend) and generate platform-native files at build time — the OpenAPI model applied to translations. No drift between platforms, translation work done once.
+
+```yaml
+# i18n-agent.config.yaml
+exports:
+  - platform: android        # values-<lang>/strings.xml, ICU plural → <plurals>, arrays → <string-array>
+    out: ../android-app/app/src/main/res
+  - platform: ios-xcstrings  # single Localizable.xcstrings (String Catalog), plural variations
+    out: ../ios-app/Resources
+  - platform: web-json       # canonical layout re-emitted as JSON
+    out: ../web-app/public/locales
+  - platform: ts-keys        # generated key unions — typo-proof t() calls
+    out: ../web-app/src/i18n
+```
+
+`i18n-agent export` after `translate`. Named placeholders become positional per platform (`{name}` → `%1$s` / `%1$@`) with the argument order taken from the **source** string — every language numbers the same argument identically, even when a translation reorders the sentence.
+
+Delivery is yours to choose: publish the export dir as a CI/release artifact and fetch it in client builds (OpenAPI-style), keep clients in a monorepo, or let a bot PR the generated files. Coming next (v0.3): `--bundle` + a NestJS companion so your OWN backend serves the artifacts by a route — self-hosted, no third-party cloud.
+
 ## Recommended: let your coding agent drive it
 
 i18n-agent ships optional **agent guides** — install one and your coding agent handles localization correctly whenever *you* ask it to ("add localization to this app", "add German", "translate the new strings"). This is a recommendation surface, not background automation: the agent learns the workflow — author the source locale, run `i18n-agent`, never hand-write target files.

@@ -12,7 +12,29 @@
 - [x] Commands: `init` (detects existing languages, prefills targets), `translate` (`--review`, `--retranslate-stale`), `check` (CI gate), `status`, `add-locale <lang…>` (append to targets + optional immediate translate; missing target files always materialize automatically on `translate`)
 - [x] Metrics + `report` (own ~/.i18n-agent/metrics.jsonl: volumes, claude -p cost receipts, DeepL-API-equivalent comparison)
 
-## v0.2 — agent surface + distribution (week 2)
+## v0.2 — multi-platform export (flagship): one canonical source → native locales for web/Android/iOS
+
+The OpenAPI analogy: canonical locales live in ONE repo (typically the backend);
+clients generate platform-native files at build time. Kills translation drift
+across platforms and cuts the translation work to one surface. Dogfood target:
+kincassa (web + Android + iOS).
+
+- [x] `exports:` config section + `i18n-agent export [--platform <p>]`
+- [x] Emitter: **android** — `values-<lang>/strings.xml`, ICU plural → `<plurals>`, arrays → `<string-array>`, named placeholders → positional `%n$s` (arg order = first occurrence in the source string, identical across languages), XML/apostrophe escaping
+- [x] Emitter: **ios-xcstrings** — single `Localizable.xcstrings` (JSON, all languages), ICU plural → plural variations, `{name}` → `%n$@`, `#` → `%lld`
+- [x] Emitter: **web-json** — canonical layout re-emitted as JSON per language
+- [x] Emitter: **ts-keys** — generated union types of namespaces/keys (typo-proof t() calls)
+- [x] Delivery patterns doc: CI/release artifact (curl at client build, OpenAPI-style), monorepo path, bot-PR into client repos
+
+## v0.3 — self-hosted delivery (recorded 2026-07-12, build after v0.2)
+
+Same artifacts, served from the USER'S OWN backend — no cloud of ours, ever:
+
+- [ ] `i18n-agent export --bundle` → versioned artifact dir (all platforms + manifest.json with hashes) ready to be mounted behind any static route
+- [ ] **`i18n-agent-nest`** companion package: NestJS module that runs generation on command and serves the bundle by a route (`/i18n/:lang/:ns`, ETag from lockfile hashes) — clients fetch at build OR at runtime (self-hosted OTA)
+- [ ] Express/Fastify recipes in docs (the bundle is just static files — any server can serve it)
+
+## v0.2.x — agent surface + distribution
 
 - [x] Agent guides: Claude Code skill + Cursor rule — recommendation surface for implementing/maintaining localization via i18n-agent (shipped in the npm package under agent-skills/)
 - [ ] `examples/demo-app` dogfood + e2e on a live subscription

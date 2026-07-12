@@ -1,0 +1,12 @@
+{
+  "appName": "TaskFlow",
+  "greeting": "Welcome back, {name}!",
+  "search": {
+    "placeholder": "Search tasks…",
+    "empty": "Nothing found for \"{query}\""
+  },
+  "files": "{count, plural, one {# file} other {# files}}",
+  "footer": "Made with <b>TaskFlow</b>",
+  "version": 3,
+  "saveButton": "Save changes"
+}

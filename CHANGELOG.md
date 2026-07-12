@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 (2026-07-12)
+
+**Multi-platform export** — one canonical source in git, native locales for every platform at build time (the OpenAPI model applied to translations):
+
+- `exports:` config section + `i18n-agent export [--platform <p>]`
+- **android**: `values-<lang>/strings.xml`, ICU plural → `<plurals>` (incl. `few/many`), arrays → `<string-array>`, XML/apostrophe escaping, named → positional `%n$s`
+- **ios-xcstrings**: single `Localizable.xcstrings` String Catalog with plural variations, `{name}` → `%n$@`, `#` → `%lld`
+- **web-json** re-emit + **ts-keys** generated key unions (typo-proof `t()`)
+- Argument numbering is derived from the SOURCE string, so all languages agree even when translations reorder words
+- Roadmap: v0.3 self-hosted delivery recorded — `export --bundle` + `i18n-agent-nest` companion (your own backend serves the artifacts; no third-party cloud)
+
 ## 0.1.1 (2026-07-12)
 
 - Docs: removed subscription-tier mentions — works on any plan; npm README refreshed.

@@ -5,6 +5,7 @@ import { runCheck } from './commands/check.js';
 import { runStatus } from './commands/status.js';
 import { runAddLocale } from './commands/add-locale.js';
 import { runReport } from './commands/report.js';
+import { runExport } from './commands/export.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -19,6 +20,7 @@ Usage:
   i18n-agent status                                       per-language sync overview
   i18n-agent add-locale <lang> [<lang>…] [--translate]    add target languages
   i18n-agent report [--days 7] [--all]                    volumes, spend receipts, DeepL-API equivalent
+  i18n-agent export [--platform <p>]                 native files: android · ios-xcstrings · web-json · ts-keys
 
 Files: i18n-agent.config.yaml · i18n-agent.context.yaml (translator hints) · i18n-agent.glossary.yaml · i18n-agent.lock
 Docs:  https://github.com/davlet42/ai18n
@@ -51,6 +53,9 @@ async function main(): Promise<void> {
       return;
     case 'report':
       process.exitCode = runReport(cwd, args.slice(1));
+      return;
+    case 'export':
+      process.exitCode = await runExport(cwd, args.slice(1));
       return;
     default:
       console.error(`Unknown command: ${command}`);

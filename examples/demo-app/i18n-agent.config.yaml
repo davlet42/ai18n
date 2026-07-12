@@ -14,3 +14,13 @@ translator:
 # Optional companion files (created with documented templates):
 context: i18n-agent.context.yaml
 glossary: i18n-agent.glossary.yaml
+
+exports:
+  - platform: android
+    out: exports/android/res
+  - platform: ios-xcstrings
+    out: exports/ios
+  - platform: web-json
+    out: exports/web
+  - platform: ts-keys
+    out: exports/web/src

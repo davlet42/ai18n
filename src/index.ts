@@ -58,3 +58,10 @@ export {
   DEEPL_USD_PER_MILLION_CHARS,
 } from './metrics.js';
 export type { RunMetricsEntry, ReportAggregate } from './metrics.js';
+
+export { runExport, parseExports, EXPORT_PLATFORMS } from './commands/export.js';
+export type { ExportEntry, ExportPlatform } from './commands/export.js';
+export { emitAndroidXml, androidResourceName, escapeAndroid } from './exporters/android.js';
+export { emitXcstrings } from './exporters/xcstrings.js';
+export { emitTsKeys } from './exporters/simple.js';
+export { collectArgOrder, toPositional, findIcuMessage } from './exporters/transform.js';
