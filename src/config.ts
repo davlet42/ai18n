@@ -15,6 +15,7 @@ export interface I18nAgentConfig {
   configPath: string; // absolute
   root: string; // directory containing the config
   exportsRaw: unknown; // `exports:` section, parsed by the export command
+  bundleOut?: string; // `bundle.out` — default dir for `export --bundle`
 }
 
 export const CONFIG_NAMES = ['i18n-agent.config.yaml', 'i18n-agent.config.yml'];
@@ -73,5 +74,9 @@ export function loadConfig(cwd: string): I18nAgentConfig {
     configPath,
     root,
     exportsRaw: raw.exports,
+    bundleOut:
+      raw.bundle && typeof raw.bundle === 'object' && typeof (raw.bundle as { out?: unknown }).out === 'string'
+        ? ((raw.bundle as { out: string }).out)
+        : undefined,
   };
 }

@@ -1,7 +1,7 @@
 {
   "name": "i18n-agent",
-  "version": "0.2.0",
-  "description": "Locale files translated by the coding-agent subscription you already pay for — diff-synced via a lockfile, placeholder-safe, manual edits stay sacred. No API keys, no per-word fees.",
+  "version": "0.3.0",
+  "description": "Locale files translated by the coding-agent subscription you already pay for \u2014 diff-synced via a lockfile, placeholder-safe, manual edits stay sacred. No API keys, no per-word fees.",
   "type": "module",
   "bin": {
     "i18n-agent": "dist/cli.js"
@@ -16,7 +16,7 @@
     "build": "tsc -p tsconfig.json",
     "prepack": "npm run build",
     "dev": "tsc -p tsconfig.json --watch",
-    "test": "npm run build && node --test test/*.test.mjs"
+    "test": "npm run build && node --test test/*.test.mjs && npm run test -w i18n-agent-nest --if-present"
   },
   "dependencies": {
     "@cursor-translate/core": "^0.2.11",
@@ -43,5 +43,8 @@
     "cursor",
     "agent",
     "i18next"
+  ],
+  "workspaces": [
+    "packages/*"
   ]
 }

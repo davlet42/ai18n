@@ -21,6 +21,7 @@ Usage:
   i18n-agent add-locale <lang> [<lang>…] [--translate]    add target languages
   i18n-agent report [--days 7] [--all]                    volumes, spend receipts, DeepL-API equivalent
   i18n-agent export [--platform <p>]                 native files: android · ios-xcstrings · web-json · ts-keys
+  i18n-agent export --bundle [--out <dir>]           versioned bundle + manifest for self-hosted delivery
 
 Files: i18n-agent.config.yaml · i18n-agent.context.yaml (translator hints) · i18n-agent.glossary.yaml · i18n-agent.lock
 Docs:  https://github.com/davlet42/ai18n

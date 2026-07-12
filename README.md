@@ -63,7 +63,22 @@ exports:
 
 `i18n-agent export` after `translate`. Named placeholders become positional per platform (`{name}` → `%1$s` / `%1$@`) with the argument order taken from the **source** string — every language numbers the same argument identically, even when a translation reorders the sentence.
 
-Delivery is yours to choose: publish the export dir as a CI/release artifact and fetch it in client builds (OpenAPI-style), keep clients in a monorepo, or let a bot PR the generated files. Coming next (v0.3): `--bundle` + a NestJS companion so your OWN backend serves the artifacts by a route — self-hosted, no third-party cloud.
+Delivery is yours to choose: publish the export dir as a CI/release artifact and fetch it in client builds (OpenAPI-style), keep clients in a monorepo, or let a bot PR the generated files.
+
+## Self-hosted delivery: your backend serves the translations
+
+```bash
+i18n-agent export --bundle          # → i18n-bundle/: all platforms + manifest.json (per-file sha256, content-derived etag)
+```
+
+Mount the bundle behind any static route — or, on NestJS, use the companion package [`i18n-agent-nest`](./packages/nest):
+
+```ts
+I18nAgentModule.forRoot({ bundleDir: 'i18n-bundle' })
+// GET /i18n/manifest.json · /i18n/web/ru/common.json · /i18n/android/… · ETag/304 out of the box
+```
+
+Web clients fetch locales at runtime, mobile CI fetches native files at build time — from YOUR server. No third-party cloud, no retention timers: the "translation service" is static files in your deploy. Not on Nest? `express.static` or nginx serve the same bundle; the module only adds correct ETags and the manifest route.
 
 ## Recommended: let your coding agent drive it
 

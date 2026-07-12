@@ -44,6 +44,23 @@ export function parseExports(raw: unknown, root: string): ExportEntry[] {
 
 export async function runExport(cwd: string, args: string[]): Promise<number> {
   const config = loadConfig(cwd);
+
+  if (args.includes('--bundle')) {
+    const { buildBundle } = await import('../bundle.js');
+    const outIdx = args.indexOf('--out');
+    const { outDir, manifest, warnings } = buildBundle(
+      config,
+      outIdx !== -1 ? args[outIdx + 1] : undefined,
+    );
+    console.log(
+      `Bundle → ${outDir}\n  etag: ${manifest.etag} · ${Object.keys(manifest.files).length} files · languages: ${manifest.languages.join(', ')}`,
+    );
+    if (warnings.length > 0) {
+      console.log(`\nWarnings (${warnings.length}):`);
+      for (const w of warnings) console.log(`  ${w}`);
+    }
+    return 0;
+  }
   const entries = parseExports(config.exportsRaw, config.root).filter((e) => {
     const onlyIdx = args.indexOf('--platform');
     return onlyIdx === -1 || args[onlyIdx + 1] === e.platform;

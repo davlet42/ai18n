@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 (2026-07-12)
+
+**Self-hosted delivery** — the same artifacts, served by YOUR backend (no third-party cloud):
+
+- `i18n-agent export --bundle [--out <dir>]` → one versioned directory: all platform exports + `manifest.json` with per-file sha256 and a content-derived bundle etag (identical content ⇒ identical etag)
+- `BundleReader` (framework-free, exported): serves only manifest-listed paths (traversal-proof), per-file ETags, auto-reload on in-place regeneration
+- Companion package **`i18n-agent-nest`** (0.1.0): `I18nAgentModule.forRoot({ bundleDir })` — manifest route + bundle files with ETag/304 on your NestJS server; web fetches at runtime, mobile CI at build time
+- Config: `bundle.out`
+
 ## 0.2.0 (2026-07-12)
 
 **Multi-platform export** — one canonical source in git, native locales for every platform at build time (the OpenAPI model applied to translations):

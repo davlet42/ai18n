@@ -65,3 +65,6 @@ export { emitAndroidXml, androidResourceName, escapeAndroid } from './exporters/
 export { emitXcstrings } from './exporters/xcstrings.js';
 export { emitTsKeys } from './exporters/simple.js';
 export { collectArgOrder, toPositional, findIcuMessage } from './exporters/transform.js';
+
+export { buildBundle, BundleReader, BUNDLE_MANIFEST } from './bundle.js';
+export type { BundleManifest, BundleManifestFile, BuildBundleResult } from './bundle.js';

@@ -1,0 +1,61 @@
+{
+  "etag": "de05bb6c785779fd05f798a2d3def5cc",
+  "generatedAt": "2026-07-12T14:38:50.227Z",
+  "sourceLang": "en",
+  "languages": [
+    "en",
+    "ru",
+    "es"
+  ],
+  "layout": "namespaces",
+  "namespaces": [
+    "auth",
+    "common"
+  ],
+  "files": {
+    "web/en/auth.json": {
+      "sha256": "0e787bc306d337807c301b9947b66f151f9b4f4acf66d189c0193c2d1620a0e9",
+      "bytes": 244
+    },
+    "web/en/common.json": {
+      "sha256": "99acb07a4c1f211a69cb080c136abdfbc1610aa4b5d3e8c64c0453c49bd750aa",
+      "bytes": 318
+    },
+    "web/ru/auth.json": {
+      "sha256": "d2d531ec2adfc8f7c27247432ceb5722615d2b52b627fde76a8f638ec87dc82b",
+      "bytes": 332
+    },
+    "web/ru/common.json": {
+      "sha256": "2d3575e015223c1ac1913b3d2d81b371049dcf1cc1b78a0e454c09a5b9ace30d",
+      "bytes": 408
+    },
+    "web/es/auth.json": {
+      "sha256": "31d95f7e93eb0698a650d17a68259c63bedd36a29a8b1828e3f08d90243cb09d",
+      "bytes": 285
+    },
+    "web/es/common.json": {
+      "sha256": "2e061e87cef9074369229a4c7a2ea192a7fec13e841121945cfb6608e78183fb",
+      "bytes": 345
+    },
+    "android/res/values/strings.xml": {
+      "sha256": "1864d5024fef79604ddf416a1be518221d43b191f8ddb89bc954ffe77bb97be9",
+      "bytes": 1059
+    },
+    "android/res/values-ru/strings.xml": {
+      "sha256": "a9e28853f7aa7fb3ad01cadf93e3af2e50c625941e6c93115801b3f424b3dfad",
+      "bytes": 1256
+    },
+    "android/res/values-es/strings.xml": {
+      "sha256": "270a3d67f41e800b68602428a4634f944926d85ce58d483721bb2506b96e58ac",
+      "bytes": 1135
+    },
+    "ios/Localizable.xcstrings": {
+      "sha256": "4cea4727f85eb3086a924b5de633f8742b2d1843999947250d4e917a5598b324",
+      "bytes": 7730
+    },
+    "ts/i18n-keys.d.ts": {
+      "sha256": "23e9c3efbacea05642e02ec68a4a76133750fd009cc2e78332f043b255692fb2",
+      "bytes": 381
+    }
+  }
+}

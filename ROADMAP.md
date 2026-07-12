@@ -30,9 +30,9 @@ kincassa (web + Android + iOS).
 
 Same artifacts, served from the USER'S OWN backend — no cloud of ours, ever:
 
-- [ ] `i18n-agent export --bundle` → versioned artifact dir (all platforms + manifest.json with hashes) ready to be mounted behind any static route
-- [ ] **`i18n-agent-nest`** companion package: NestJS module that runs generation on command and serves the bundle by a route (`/i18n/:lang/:ns`, ETag from lockfile hashes) — clients fetch at build OR at runtime (self-hosted OTA)
-- [ ] Express/Fastify recipes in docs (the bundle is just static files — any server can serve it)
+- [x] `i18n-agent export --bundle` → versioned artifact dir (all platforms + manifest.json with hashes) ready to be mounted behind any static route
+- [x] **`i18n-agent-nest`** companion package: NestJS module that runs generation on command and serves the bundle by a route (`/i18n/:lang/:ns`, ETag from lockfile hashes) — clients fetch at build OR at runtime (self-hosted OTA)
+- [x] Express/nginx note in docs (the bundle is just static files) (the bundle is just static files — any server can serve it)
 
 ## v0.2.x — agent surface + distribution
 
