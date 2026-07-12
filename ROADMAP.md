@@ -16,8 +16,7 @@
 
 The OpenAPI analogy: canonical locales live in ONE repo (typically the backend);
 clients generate platform-native files at build time. Kills translation drift
-across platforms and cuts the translation work to one surface. Dogfood target:
-kincassa (web + Android + iOS).
+across platforms and cuts the translation work to one surface.
 
 - [x] `exports:` config section + `i18n-agent export [--platform <p>]`
 - [x] Emitter: **android** — `values-<lang>/strings.xml`, ICU plural → `<plurals>`, arrays → `<string-array>`, named placeholders → positional `%n$s` (arg order = first occurrence in the source string, identical across languages), XML/apostrophe escaping
