@@ -21,6 +21,7 @@ import {
   writeLockfile,
   type Lockfile,
 } from './lockfile.js';
+import { appendRunMetrics } from './metrics.js';
 import { countPlan, planNamespace, type NamespacePlan, type PlanCounts } from './planner.js';
 import {
   claudeCliTransport,
@@ -131,6 +132,7 @@ export interface ApplySyncResult {
   failed: { id: string; lang: string; reason: string }[];
   reviews: ReviewItem[];
   calls: number;
+  costUsd?: number; // sum of claude -p receipts, when available
 }
 
 export async function applySync(
@@ -183,8 +185,33 @@ export async function applySync(
       model: config.model,
     });
     result.calls += batch.calls;
+    if (batch.costUsd !== undefined) {
+      result.costUsd = (result.costUsd ?? 0) + batch.costUsd;
+    }
     for (const failure of batch.failed) {
       result.failed.push({ id: failure.id, lang, reason: failure.reason });
+    }
+
+    const langTranslated = batch.translations.size;
+    if (langTranslated > 0 || batch.failed.length > 0) {
+      let charsSource = 0;
+      let charsTranslated = 0;
+      for (const item of items) {
+        charsSource += item.text.length;
+        charsTranslated += batch.translations.get(item.id)?.length ?? 0;
+      }
+      appendRunMetrics({
+        ts: new Date().toISOString(),
+        project: config.root.split('/').pop() ?? config.root,
+        lang,
+        translated: langTranslated,
+        failed: batch.failed.length,
+        calls: batch.calls,
+        chars_source: charsSource,
+        chars_translated: charsTranslated,
+        cost_usd: batch.costUsd,
+        model: config.model,
+      });
     }
 
     // 2) rebuild every namespace tree for this language and update the lock

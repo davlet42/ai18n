@@ -19,7 +19,17 @@ export interface BatchItem {
   context?: string;
 }
 
-export type BatchTransport = (call: { system: string; user: string }) => Promise<string>;
+export interface BatchTransportResult {
+  text: string;
+  costUsd?: number;
+}
+
+// A transport may return plain text or { text, costUsd } — the latter carries
+// actual spend receipts (e.g. from `claude -p --output-format json`).
+export type BatchTransport = (call: {
+  system: string;
+  user: string;
+}) => Promise<string | BatchTransportResult>;
 
 export interface TranslateBatchOptions {
   sourceLang: string;
@@ -35,6 +45,7 @@ export interface TranslateBatchResult {
   translations: Map<string, string>;
   failed: { id: string; reason: string }[];
   calls: number;
+  costUsd?: number; // sum of receipts, when the transport reports them
 }
 
 export function buildSystemPrompt(options: TranslateBatchOptions): string {
@@ -110,7 +121,7 @@ export function claudeCliTransport(options: { model?: string } = {}): BatchTrans
     if (result.quotaExhausted) {
       throw new Error('quota_exhausted');
     }
-    return result.text;
+    return { text: result.text, costUsd: result.costUsd };
   };
 }
 
@@ -118,19 +129,29 @@ async function requestTranslations(
   transport: BatchTransport,
   system: string,
   items: BatchItem[],
-  state: { calls: number },
+  state: { calls: number; costUsd: number; receipts: number },
 ): Promise<Record<string, unknown> | null> {
+  const invoke = async (user: string): Promise<Record<string, unknown> | null> => {
+    state.calls += 1;
+    const raw = await transport({ system, user });
+    const text = typeof raw === 'string' ? raw : raw.text;
+    if (typeof raw !== 'string' && typeof raw.costUsd === 'number') {
+      state.costUsd += raw.costUsd;
+      state.receipts += 1;
+    }
+    return parseJsonObject(text);
+  };
+
   const user = buildUserPrompt(items);
-  state.calls += 1;
-  let parsed = parseJsonObject(await transport({ system, user }));
+  let parsed = await invoke(user);
 
   const complete = (obj: Record<string, unknown> | null): boolean =>
     !!obj && items.every((item) => typeof obj[item.id] === 'string');
 
   if (!complete(parsed)) {
-    state.calls += 1;
-    const corrective = `${user}\n\nYour previous response was not a valid JSON object containing every id. Respond again with ONLY the JSON object, one entry per id.`;
-    parsed = parseJsonObject(await transport({ system, user: corrective }));
+    parsed = await invoke(
+      `${user}\n\nYour previous response was not a valid JSON object containing every id. Respond again with ONLY the JSON object, one entry per id.`,
+    );
   }
   return parsed;
 }
@@ -141,6 +162,7 @@ export async function translateBatch(
 ): Promise<TranslateBatchResult> {
   const transport = options.transport ?? claudeCliTransport({ model: options.model });
   const system = buildSystemPrompt(options);
+  const state = { calls: 0, costUsd: 0, receipts: 0 };
   const result: TranslateBatchResult = { translations: new Map(), failed: [], calls: 0 };
   if (items.length === 0) {
     return result;
@@ -151,7 +173,7 @@ export async function translateBatch(
   for (const chunk of chunks) {
     let parsed: Record<string, unknown> | null;
     try {
-      parsed = await requestTranslations(transport, system, chunk, result);
+      parsed = await requestTranslations(transport, system, chunk, state);
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
       for (const item of chunk) {
@@ -181,7 +203,7 @@ export async function translateBatch(
     if (violations.length > 0) {
       let retryParsed: Record<string, unknown> | null = null;
       try {
-        retryParsed = await requestTranslations(transport, system, violations, result);
+        retryParsed = await requestTranslations(transport, system, violations, state);
       } catch {
         retryParsed = null;
       }
@@ -201,5 +223,9 @@ export async function translateBatch(
     }
   }
 
+  result.calls = state.calls;
+  if (state.receipts > 0) {
+    result.costUsd = state.costUsd;
+  }
   return result;
 }

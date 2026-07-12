@@ -47,3 +47,14 @@ export { loadContextMap, loadGlossaryTerms } from './context-glossary.js';
 
 export { computeSync, applySync } from './sync.js';
 export type { SyncState, ApplySyncOptions, ApplySyncResult, ReviewItem } from './sync.js';
+
+export {
+  ai18nHome,
+  metricsPath,
+  appendRunMetrics,
+  readRunMetrics,
+  aggregateRunMetrics,
+  formatReport,
+  DEEPL_USD_PER_MILLION_CHARS,
+} from './metrics.js';
+export type { RunMetricsEntry, ReportAggregate } from './metrics.js';

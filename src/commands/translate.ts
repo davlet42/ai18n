@@ -55,6 +55,9 @@ export async function runTranslate(cwd: string, args: string[]): Promise<number>
   console.log(
     `Translated ${result.translated} strings (${result.calls} agent calls) · renamed-migrated: ${result.migrated} · pruned: ${result.pruned} · files written: ${result.writtenFiles.length}`,
   );
+  if (result.costUsd !== undefined) {
+    console.log(`Spend receipts: $${result.costUsd.toFixed(4)} (claude -p; ~$0 marginal on a subscription) — see \`ai18n report\`.`);
+  }
   if (result.failed.length > 0) {
     console.log(`\nFailed (${result.failed.length}) — source text shipped as fallback, will retry next run:`);
     for (const f of result.failed) {

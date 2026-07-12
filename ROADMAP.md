@@ -10,7 +10,7 @@
 - [x] Context file `ai18n.context.yaml` (key path → hint for the translator) — documented in detail
 - [x] Glossary `ai18n.glossary.yaml` (terms to pin or keep untranslated)
 - [x] Commands: `init` (detects existing languages, prefills targets), `translate` (`--review`, `--retranslate-stale`), `check` (CI gate), `status`, `add-locale <lang…>` (append to targets + optional immediate translate; missing target files always materialize automatically on `translate`)
-- [ ] Metrics + `report` (reuse core metrics: volumes, real cost receipts)
+- [x] Metrics + `report` (own ~/.ai18n/metrics.jsonl: volumes, claude -p cost receipts, DeepL-API-equivalent comparison)
 
 ## v0.2 — agent surface + distribution (week 2)
 

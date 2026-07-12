@@ -4,6 +4,7 @@ import { runTranslate } from './commands/translate.js';
 import { runCheck } from './commands/check.js';
 import { runStatus } from './commands/status.js';
 import { runAddLocale } from './commands/add-locale.js';
+import { runReport } from './commands/report.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -17,6 +18,7 @@ Usage:
   ai18n check                                        CI gate: exit 1 when locales drift
   ai18n status                                       per-language sync overview
   ai18n add-locale <lang> [<lang>…] [--translate]    add target languages
+  ai18n report [--days 7] [--all]                    volumes, spend receipts, DeepL-API equivalent
 
 Files: ai18n.config.yaml · ai18n.context.yaml (translator hints) · ai18n.glossary.yaml · ai18n.lock
 Docs:  https://github.com/davlet42/ai18n
@@ -46,6 +48,9 @@ async function main(): Promise<void> {
       return;
     case 'add-locale':
       process.exitCode = await runAddLocale(cwd, args.slice(1));
+      return;
+    case 'report':
+      process.exitCode = runReport(cwd, args.slice(1));
       return;
     default:
       console.error(`Unknown command: ${command}`);

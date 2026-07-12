@@ -7,5 +7,6 @@
   },
   "files": "{count, plural, one {# archivo} other {# archivos}}",
   "footer": "Hecho con <b>TaskFlow</b>",
-  "version": 3
+  "version": 3,
+  "saveButton": "Guardar cambios"
 }

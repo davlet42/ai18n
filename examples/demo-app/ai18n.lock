@@ -113,6 +113,20 @@
         }
       }
     },
+    "common:saveButton": {
+      "targets": {
+        "es": {
+          "sha": "14bdfaf2face3a07de2519fa161bbdcc2a380a231f180a569695a13b8a9947a5",
+          "by": "ai18n",
+          "source": "dd0ae7a5cbcf233968657563dce34639e681861e2df6d3f845c08d49981c0999"
+        },
+        "ru": {
+          "sha": "744cf2b219992c28613d6dd92c1f9a70e66937d4f664ddc60cb85da18d789e3d",
+          "by": "ai18n",
+          "source": "dd0ae7a5cbcf233968657563dce34639e681861e2df6d3f845c08d49981c0999"
+        }
+      }
+    },
     "common:search.empty": {
       "targets": {
         "es": {
