@@ -1,0 +1,46 @@
+{
+  "name": "ai18n",
+  "version": "0.1.0",
+  "description": "Locale files translated by the coding-agent subscription you already pay for — diff-synced via a lockfile, placeholder-safe, manual edits stay sacred. No API keys, no per-word fees.",
+  "type": "module",
+  "bin": {
+    "ai18n": "dist/cli.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build",
+    "dev": "tsc -p tsconfig.json --watch",
+    "test": "npm run build && node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@cursor-translate/core": "^0.2.11",
+    "yaml": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/davlet42/ai18n",
+  "keywords": [
+    "i18n",
+    "localization",
+    "l10n",
+    "translation",
+    "locale",
+    "ai",
+    "claude",
+    "claude-code",
+    "cursor",
+    "agent",
+    "i18next"
+  ]
+}
