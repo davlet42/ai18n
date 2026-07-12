@@ -15,7 +15,7 @@
     "test": "npm run build && node --test test/*.test.mjs"
   },
   "dependencies": {
-    "i18n-agent": "file:../.."
+    "i18n-agent": "^0.3.0"
   },
   "peerDependencies": {
     "@nestjs/common": "^10.0.0 || ^11.0.0"
