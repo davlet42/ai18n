@@ -25,7 +25,18 @@ jobs:
       - run: npm ci
       - run: npm test
 
-      - name: Publish claude-translate
-        run: npm publish
+      - name: Publish i18n-agent (skip if version already on npm)
+        run: |
+          LOCAL=$(node -p "require('./package.json').version")
+          REMOTE=$(npm view i18n-agent version 2>/dev/null || echo none)
+          if [ "$LOCAL" != "$REMOTE" ]; then npm publish --access public; else echo "i18n-agent@$LOCAL already published — skip"; fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish i18n-agent-nest (skip if version already on npm)
+        run: |
+          LOCAL=$(node -p "require('./packages/nest/package.json').version")
+          REMOTE=$(npm view i18n-agent-nest version 2>/dev/null || echo none)
+          if [ "$LOCAL" != "$REMOTE" ]; then npm publish -w i18n-agent-nest --access public; else echo "i18n-agent-nest@$LOCAL already published — skip"; fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
