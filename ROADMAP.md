@@ -52,10 +52,16 @@ Same artifacts, served from the USER'S OWN backend — no cloud of ours, ever:
 - [x] Reader: string/comment-aware balanced scan of the default export (`as const` / `satisfies` inside translated text cannot confuse it), inner assertions stripped, evaluation in an empty vm sandbox — modules must be self-contained (no imported values; template interpolation rejected with a clear error); result realm-normalized via JSON round-trip
 - [x] Writer: deterministic emitter (bare identifier keys, single-quoted strings, 2-space indent, `as const` suffix); `.d.ts` codegen neighbours are ignored when detecting namespaces
 
+## v0.5 — import sources · SHIPPED in 0.5.0
+
+- [x] `i18n-agent import --platform android --in <resDir>` — values*/strings.xml → canonical locales: `<plurals>` → ICU plural, `<string-array>` → arrays, entities/escapes unescaped, `translatable="false"` skipped, non-language qualifier dirs ignored; existing files are never clobbered without `--force`
+- [x] `i18n-agent import --platform ios-xcstrings --in <catalog>` — dot keys → nesting, top-level segment → namespace (or `--ns` for a single one), plural variations → ICU; the placeholder guard now knows Apple printf specifiers (`%@`, `%1$@`, `%lld`)
+- [x] Both write in the detected layout (JSON/YAML/TS) and rely on the engine's adopt semantics: pre-existing translations become human-owned on the next `translate`
+
 ## v2 — ideas (gated on v0.1 traction)
 
 - [ ] **`/i18nify` — the killer skill**: agent-driven i18n-фикация of a legacy project with hardcoded strings — wrap strings in `t()`, generate keys and the source locale, wire the i18n library. Extraction tools do half of this badly; agents can do all of it. Potentially the strongest wedge of the family.
-- [ ] More formats: gettext PO, CSV, ARB (Flutter), Android XML / iOS strings
+- [ ] More formats: gettext PO, CSV, ARB (Flutter)
 - [ ] Upstream integrations: consume i18next-parser / FormatJS extractor output
 - [ ] More providers: cursor-cli and OpenAI-compatible endpoints via core exports, Ollama for fully local
 - [ ] MCP tool for cloud agents (no hooks there — same pattern as *-translate)

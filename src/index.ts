@@ -60,6 +60,9 @@ export {
 export type { RunMetricsEntry, ReportAggregate } from './metrics.js';
 
 export { runExport, parseExports, EXPORT_PLATFORMS } from './commands/export.js';
+export { runImport, IMPORT_PLATFORMS } from './commands/import.js';
+export { parseAndroidStringsXml, androidLangFromValuesDir } from './importers/android-xml-import.js';
+export { parseXcstrings } from './importers/xcstrings-import.js';
 export type { ExportEntry, ExportPlatform } from './commands/export.js';
 export { emitAndroidXml, androidResourceName, escapeAndroid } from './exporters/android.js';
 export { emitXcstrings } from './exporters/xcstrings.js';

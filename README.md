@@ -104,6 +104,19 @@ The guides encode the ownership rules (source is yours, targets are machine-owne
 
 **v0.1 engine complete and live-verified** (2026-07-12): 20-string demo translated to ru+es in 2 agent calls through the subscription; repeat runs cost 0 calls; ICU plurals, glossary pinning, rename migration and the review flow verified end-to-end. 33/33 tests. See [ROADMAP.md](./ROADMAP.md) for what's next (`/i18nify` is coming). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate) — the engine behind [cursor-translate](https://github.com/davlet42/cursor-translate) and [claude-translate](https://github.com/davlet42/claude-translate).
 
+## Migrating an existing app: import your native translations
+
+Already shipping with per-platform locales? Pull them into the canonical set once — keeping every human translation:
+
+```bash
+i18n-agent import --platform android --in app/src/main/res
+i18n-agent import --platform ios-xcstrings --in Localizable.xcstrings
+```
+
+- **Android**: `values*/strings.xml` land in one namespace (default `android`); `<plurals>` become ICU plural, `<string-array>` arrays; `translatable="false"` brand constants are skipped; non-language qualifier dirs (`values-night`, `values-v21`) are ignored.
+- **iOS**: dot keys become nesting and the top-level segment becomes the namespace (`auth.signIn.title` → `auth.json`); plural variations become ICU plural; Apple specifiers (`%@`, `%lld`) are understood by the placeholder guard.
+- Then run `i18n-agent translate`: every pre-existing translation is **adopted as human-owned** — sacred, never overwritten; only genuinely missing keys hit the translator.
+
 ## Honest economics
 
 - Translation runs on your **subscription's cheap tier** (Haiku-class): a 2,000-string app × 10 languages ≈ a few dollars of API money — or ~$0 marginal on the subscription you already have.

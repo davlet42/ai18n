@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 (2026-07-13)
+
+**Import sources** — migrate an existing app's native translations into the canonical set once, keeping every human translation:
+
+- `i18n-agent import --platform android --in <resDir>`: `values*/strings.xml` → one namespace (default `android`); `<plurals>` → ICU plural, `<string-array>` → arrays, XML entities and android escapes unescaped, whole-string quoting stripped, `translatable="false"` entries skipped, non-language qualifier dirs (`values-night`, `values-v21`) ignored, `values-zh-rCN` → `zh-CN`
+- `i18n-agent import --platform ios-xcstrings --in <catalog>`: dot keys become nesting, the top-level segment becomes the namespace (`--ns` forces a single one), plural variations → ICU plural (`%lld` → `#`), a string without a source localization uses the key as its value (warned)
+- Both write in the detected layout (JSON/YAML/TS-module; `--format` for fresh projects), refuse to overwrite existing locale files without `--force`, and lean on adopt semantics: on the next `translate`, every pre-existing translation is recorded as human-owned and never overwritten
+- Placeholder guard: printf class extended with Apple specifiers (`%@`, `%1$@`, `%lld`)
+
 ## 0.4.0 (2026-07-13)
 
 **TS-module locale layout** — typed web codebases keep locales as TS, not JSON; now they can adopt the canonical-locales flow without giving up compile-checked keys:

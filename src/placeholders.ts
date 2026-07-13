@@ -9,7 +9,9 @@
 // <br/>, react-i18next numeric <0>). Tag attributes are ignored on purpose —
 // translators may reorder them; the tag structure is what must survive.
 
-const PRINTF_RE = /^%(\d+\$)?[sdif]/;
+// `@` and the `ll` length modifier cover Apple-style specifiers (%@, %1$@, %lld)
+// that arrive via the ios-xcstrings importer.
+const PRINTF_RE = /^%(\d+\$)?(?:ll)?[sdif@]/;
 const NAMED_PRINTF_RE = /^%\(([^)]+)\)[sdif]/;
 const TAG_RE = /^<(\/?)([a-zA-Z0-9]+)([^<>]*?)(\/?)>/;
 const ICU_HEAD_RE = /^([\w.]+)\s*,\s*(plural|selectordinal|select)\s*,([\s\S]*)$/;

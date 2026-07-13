@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3 (2026-07-13)
+
+- Depend on `i18n-agent@^0.5.0`.
+
 ## 0.1.2 (2026-07-13)
 
 - Depend on `i18n-agent@^0.4.0` (BundleReader in-memory hot path from 0.3.2 + TS-module locale layout from 0.4.0).
