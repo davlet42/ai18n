@@ -41,10 +41,16 @@ Same artifacts, served from the USER'S OWN backend — no cloud of ours, ever:
 - [x] npm publish + GitHub release CI (v* tags; both packages, skip-if-published guards)
 - [ ] **Distribution test per the gate (THE open item — awaiting the go decision)**: Habr + Show HN + Reddit, 4-week window; thresholds: sustained ≥50 organic DL/day OR ≥30 stars OR ≥3 unsolicited feature requests
 
+## v0.3.x — hardening (feedback from the first self-hosted production deployment)
+
+- [ ] `i18n-agent-nest`: stop hitting the event loop with sync fs per request — async reads + in-memory content cache keyed by the manifest etag (files are already hash-addressed there)
+- [ ] `BundleReader`: manifest file lookups must not match prototype-inherited keys (`Object.hasOwn` instead of property access) — not exploitable today (path prefix-check + ENOENT→404), pure hygiene
+
 ## v2 — ideas (gated on v0.1 traction)
 
 - [ ] **`/i18nify` — the killer skill**: agent-driven i18n-фикация of a legacy project with hardcoded strings — wrap strings in `t()`, generate keys and the source locale, wire the i18n library. Extraction tools do half of this badly; agents can do all of it. Potentially the strongest wedge of the family.
 - [ ] More formats: gettext PO, CSV, ARB (Flutter), Android XML / iOS strings
+- [ ] TS-module locale resources (`export default {...} as const`) as a first-class layout — typed web codebases keep locales as TS, not JSON; needed before such a project can adopt the canonical-locales flow without giving up key typing
 - [ ] Upstream integrations: consume i18next-parser / FormatJS extractor output
 - [ ] More providers: cursor-cli and OpenAI-compatible endpoints via core exports, Ollama for fully local
 - [ ] MCP tool for cloud agents (no hooks there — same pattern as *-translate)
