@@ -1,6 +1,6 @@
 {
   "name": "i18n-agent",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "Locale files translated by the coding-agent subscription you already pay for — diff-synced via a lockfile, placeholder-safe, manual edits stay sacred. No API keys, no per-word fees.",
   "type": "module",
   "bin": {

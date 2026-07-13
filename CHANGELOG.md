@@ -1,7 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.3.2 (2026-07-13)
 
+**BundleReader hardening** — feedback from the first self-hosted production deployment (0.3.1 was skipped: the `v0.3.1` release train shipped `i18n-agent-nest@0.1.1`):
+
+- The hot path no longer touches the filesystem: file contents are cached in memory per manifest etag (a bundle is the project's locale artifacts, so the cache is bounded by the manifest), and the manifest mtime stat is throttled — new `BundleReaderOptions.statIntervalMs` (default 1000, 0 = stat every call). In-place regeneration is still picked up within the interval.
+- Manifest lookups use `Object.hasOwn` — prototype-inherited property names (`constructor`, `__proto__`, …) can no longer match as paths (was not exploitable thanks to the path prefix-check, pure hygiene).
+- Mid-regeneration race: content whose hash mismatches the manifest entry is served but never cached, so a half-swapped bundle cannot pin stale pairs until the next etag change.
+- New exported types: `BundleReaderOptions`, `BundleFile`.
 - CI: auto-publish covers both packages (`i18n-agent`, `i18n-agent-nest`) with skip-if-published guards — either can release independently without red runs.
 - nest: depends on the published `i18n-agent@^0.3.0` (registry) instead of the local file link.
 

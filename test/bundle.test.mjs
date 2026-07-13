@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, utimesSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
@@ -91,7 +91,7 @@ describe('BundleReader', () => {
     const root = setupProject();
     const config = loadConfig(root);
     const { outDir } = buildBundle(config);
-    const reader = new BundleReader(outDir);
+    const reader = new BundleReader(outDir, { statIntervalMs: 0 });
     const before = reader.manifest().etag;
 
     writeFileSync(
@@ -111,5 +111,64 @@ describe('BundleReader', () => {
     const reader = new BundleReader(join(tmpdir(), 'no-such-bundle'));
     assert.equal(reader.manifest(), null);
     assert.equal(reader.read('web/en.json'), null);
+  });
+
+  it('serves repeat reads from memory (no filesystem on the hot path)', () => {
+    const root = setupProject();
+    const { outDir } = buildBundle(loadConfig(root));
+    const reader = new BundleReader(outDir);
+
+    const first = reader.read('web/ru/common.json');
+    assert.ok(first.content.toString('utf8').includes('Привет'));
+
+    rmSync(join(outDir, 'web', 'ru', 'common.json'));
+    const second = reader.read('web/ru/common.json');
+    assert.ok(second, 'cached content survives the file being gone');
+    assert.equal(second.content, first.content);
+  });
+
+  it('rejects prototype-inherited property names as paths', () => {
+    const root = setupProject();
+    const { outDir } = buildBundle(loadConfig(root));
+    const reader = new BundleReader(outDir);
+
+    assert.equal(reader.read('constructor'), null);
+    assert.equal(reader.read('__proto__'), null);
+    assert.equal(reader.read('toString'), null);
+  });
+
+  it('serves but does not cache content that mismatches the manifest hash', () => {
+    const root = setupProject();
+    const { outDir } = buildBundle(loadConfig(root));
+    const reader = new BundleReader(outDir, { statIntervalMs: 0 });
+    const rel = 'web/ru/common.json';
+
+    writeFileSync(join(outDir, rel), '{"greet":"swapped mid-regeneration"}');
+    const mismatched = reader.read(rel);
+    assert.ok(mismatched.content.toString('utf8').includes('swapped'));
+
+    rmSync(join(outDir, rel));
+    assert.equal(reader.read(rel), null, 'mismatched content was not pinned in the cache');
+  });
+
+  it('drops the content cache when the manifest etag changes', () => {
+    const root = setupProject();
+    const config = loadConfig(root);
+    const { outDir } = buildBundle(config);
+    const reader = new BundleReader(outDir, { statIntervalMs: 0 });
+    assert.ok(reader.read('web/ru/common.json').content.toString('utf8').includes('Привет'));
+
+    writeFileSync(
+      join(root, 'locales', 'ru', 'common.json'),
+      JSON.stringify({ greet: 'Салют, {name}!', files: '{count, plural, one {# файл} other {# файлов}}' }),
+    );
+    buildBundle(config);
+    const future = new Date(Date.now() + 2000);
+    utimesSync(join(outDir, 'manifest.json'), future, future);
+
+    assert.ok(
+      reader.read('web/ru/common.json').content.toString('utf8').includes('Салют'),
+      'new etag invalidates previously cached content',
+    );
   });
 });

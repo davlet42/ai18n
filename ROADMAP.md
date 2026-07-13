@@ -41,10 +41,10 @@ Same artifacts, served from the USER'S OWN backend — no cloud of ours, ever:
 - [x] npm publish + GitHub release CI (v* tags; both packages, skip-if-published guards)
 - [ ] **Distribution test per the gate (THE open item — awaiting the go decision)**: Habr + Show HN + Reddit, 4-week window; thresholds: sustained ≥50 organic DL/day OR ≥30 stars OR ≥3 unsolicited feature requests
 
-## v0.3.x — hardening (feedback from the first self-hosted production deployment)
+## v0.3.x — hardening (feedback from the first self-hosted production deployment) · SHIPPED in 0.3.2
 
-- [ ] `i18n-agent-nest`: stop hitting the event loop with sync fs per request — async reads + in-memory content cache keyed by the manifest etag (files are already hash-addressed there)
-- [ ] `BundleReader`: manifest file lookups must not match prototype-inherited keys (`Object.hasOwn` instead of property access) — not exploitable today (path prefix-check + ENOENT→404), pure hygiene
+- [x] Hot path off the filesystem — implemented in `BundleReader` (so every server companion gets it): in-memory content cache keyed by the manifest etag + throttled manifest stat (`statIntervalMs`, default 1s); mismatched mid-regeneration content is served but never cached
+- [x] `BundleReader`: manifest file lookups via `Object.hasOwn` — prototype-inherited keys no longer match as paths (was not exploitable thanks to the path prefix-check, pure hygiene)
 
 ## v2 — ideas (gated on v0.1 traction)
 

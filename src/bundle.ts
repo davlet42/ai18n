@@ -141,21 +141,59 @@ export function buildBundle(config: I18nAgentConfig, outOverride?: string): Buil
   return { outDir, manifest, warnings };
 }
 
+export interface BundleReaderOptions {
+  /**
+   * How long (ms) a loaded manifest is trusted before the file is re-statted.
+   * Default 1000 — steady-state requests never touch the filesystem; an
+   * in-place regeneration is picked up within a second. 0 = stat every call.
+   */
+  statIntervalMs?: number;
+}
+
+export interface BundleFile {
+  /** Treat as immutable — the same Buffer is shared across cached reads. */
+  content: Buffer;
+  sha256: string;
+  etag: string;
+}
+
 // Framework-free reader used by server companions (i18n-agent-nest et al.).
 // Serves ONLY paths listed in the manifest; reloads the manifest when its
 // mtime changes (a redeploy/regeneration swaps the bundle in place).
+//
+// Hot path is memory-only: the manifest stat is throttled (statIntervalMs)
+// and file contents are cached per manifest etag — a bundle is the project's
+// locale artifacts (KBs–MBs), so the cache is bounded by the manifest itself.
 export class BundleReader {
   private manifestCache: BundleManifest | null = null;
   private manifestMtimeMs = 0;
+  private lastStatAtMs = 0;
+  private readonly statIntervalMs: number;
+  private readonly contentCache = new Map<string, BundleFile>();
+  private contentCacheEtag: string | null = null;
 
-  constructor(private readonly bundleDir: string) {}
+  constructor(
+    private readonly bundleDir: string,
+    options?: BundleReaderOptions,
+  ) {
+    this.statIntervalMs = options?.statIntervalMs ?? 1000;
+  }
 
   manifest(): BundleManifest | null {
+    const now = Date.now();
+    if (this.manifestCache && now - this.lastStatAtMs < this.statIntervalMs) {
+      return this.manifestCache;
+    }
     const path = join(this.bundleDir, BUNDLE_MANIFEST);
     if (!existsSync(path)) {
+      // A regeneration removes the dir before rewriting it — drop the cache so
+      // the throttle shortcut cannot resurrect a manifest that no longer exists.
+      this.manifestCache = null;
+      this.lastStatAtMs = now;
       return null;
     }
     const mtimeMs = statSync(path).mtimeMs;
+    this.lastStatAtMs = now;
     if (!this.manifestCache || mtimeMs !== this.manifestMtimeMs) {
       try {
         this.manifestCache = JSON.parse(readFileSync(path, 'utf8')) as BundleManifest;
@@ -172,22 +210,39 @@ export class BundleReader {
   }
 
   // rel must be a manifest-listed path — anything else (including traversal
-  // attempts) returns null.
-  read(rel: string): { content: Buffer; sha256: string; etag: string } | null {
+  // attempts and prototype-inherited property names) returns null.
+  read(rel: string): BundleFile | null {
     const manifest = this.manifest();
     if (!manifest) {
       return null;
     }
-    const entry = manifest.files[rel];
-    if (!entry) {
+    if (!Object.hasOwn(manifest.files, rel)) {
       return null;
+    }
+    const entry = manifest.files[rel];
+    if (manifest.etag !== this.contentCacheEtag) {
+      this.contentCache.clear();
+      this.contentCacheEtag = manifest.etag;
+    }
+    const cached = this.contentCache.get(rel);
+    if (cached) {
+      return cached;
     }
     const path = resolve(this.bundleDir, rel);
     if (!path.startsWith(resolve(this.bundleDir) + sep)) {
       return null; // belt and braces on top of the manifest allowlist
     }
     try {
-      return { content: readFileSync(path), sha256: entry.sha256, etag: `"${entry.sha256}"` };
+      const content = readFileSync(path);
+      const file: BundleFile = { content, sha256: entry.sha256, etag: `"${entry.sha256}"` };
+      // Cache only content that matches the manifest hash: an in-place
+      // regeneration can briefly pair a newer file with the older manifest —
+      // serve it, but let the next read re-check instead of pinning the
+      // mismatch until the next etag change.
+      if (sha256(content) === entry.sha256) {
+        this.contentCache.set(rel, file);
+      }
+      return file;
     } catch {
       return null;
     }
