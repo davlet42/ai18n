@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0 (2026-07-13)
+
+**TS-module locale layout** — typed web codebases keep locales as TS, not JSON; now they can adopt the canonical-locales flow without giving up compile-checked keys:
+
+- `export default { … } as const;` files are a first-class locale format alongside JSON/YAML — auto-detected from the source locale (`locales/en.ts` or `locales/en/<ns>.ts`), targets are written in the same format
+- Reader: string/comment-aware balanced scan of the default-export literal (the words `as const` / `satisfies` inside translated text cannot confuse it), inner `as const` assertions stripped, evaluation in an empty `node:vm` sandbox with a clear error for non-self-contained modules (imported values, template interpolation); result is realm-normalized
+- Writer: deterministic emitter — bare identifier keys, single-quoted strings, 2-space indent, `as const` suffix
+- `.d.ts` files next to locales (generated key typings) are ignored when detecting the layout and listing namespaces
+
 ## 0.3.2 (2026-07-13)
 
 **BundleReader hardening** — feedback from the first self-hosted production deployment (0.3.1 was skipped: the `v0.3.1` release train shipped `i18n-agent-nest@0.1.1`):

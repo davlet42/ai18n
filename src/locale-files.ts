@@ -1,18 +1,20 @@
 import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import YAML from 'yaml';
+import { parseTsLocaleModule, serializeTsLocaleModule } from './ts-module-locale.js';
 
 // Locale tree IO. Two layouts:
 //   flat        locales/en.json            (one file per language)
 //   namespaces  locales/en/common.json     (i18next-style, one dir per language)
-// JSON and YAML; key order is preserved (insertion order on parse, kept on write).
-// Targets always mirror the SOURCE structure — nesting and order come from the
-// source tree, only string leaves get translated values.
+// Three formats: JSON, YAML, and TS modules (`export default {…} as const;` —
+// see ts-module-locale.ts). Key order is preserved (insertion order on parse,
+// kept on write). Targets always mirror the SOURCE structure — nesting and
+// order come from the source tree, only string leaves get translated values.
 
 export type Leaf = string | number | boolean | null;
 export type LocaleTree = { [key: string]: LocaleTree | Leaf } | Leaf[];
 
-export type LocaleExt = 'json' | 'yaml' | 'yml';
+export type LocaleExt = 'json' | 'yaml' | 'yml' | 'ts';
 
 export interface LocaleLayout {
   kind: 'flat' | 'namespaces';
@@ -20,14 +22,20 @@ export interface LocaleLayout {
   ext: LocaleExt;
 }
 
-const EXTS: LocaleExt[] = ['json', 'yaml', 'yml'];
+// 'ts' is last so mixed directories keep resolving to JSON/YAML.
+const EXTS: LocaleExt[] = ['json', 'yaml', 'yml', 'ts'];
+
+// Declaration files (i18n-keys.d.ts and friends) are codegen output, not locales.
+function isLocaleFile(fileName: string, ext: LocaleExt): boolean {
+  return fileName.endsWith(`.${ext}`) && !(ext === 'ts' && fileName.endsWith('.d.ts'));
+}
 
 export function detectLayout(localesDir: string, sourceLang: string): LocaleLayout {
   const langDir = join(localesDir, sourceLang);
   if (existsSync(langDir)) {
-    const files = readdirSync(langDir).filter((f) => EXTS.some((e) => f.endsWith(`.${e}`)));
+    const files = readdirSync(langDir).filter((f) => EXTS.some((e) => isLocaleFile(f, e)));
     if (files.length > 0) {
-      const ext = EXTS.find((e) => files[0].endsWith(`.${e}`))!;
+      const ext = EXTS.find((e) => isLocaleFile(files[0], e))!;
       return { kind: 'namespaces', dir: localesDir, ext };
     }
   }
@@ -37,7 +45,7 @@ export function detectLayout(localesDir: string, sourceLang: string): LocaleLayo
     }
   }
   throw new Error(
-    `No source locale found for "${sourceLang}" under ${localesDir} — expected ${sourceLang}.json/.yaml or ${sourceLang}/<namespace>.json`,
+    `No source locale found for "${sourceLang}" under ${localesDir} — expected ${sourceLang}.json/.yaml/.ts or ${sourceLang}/<namespace>.json`,
   );
 }
 
@@ -53,7 +61,7 @@ export function listNamespaces(layout: LocaleLayout, lang: string): string[] {
     return [];
   }
   return readdirSync(dir)
-    .filter((f) => f.endsWith(`.${layout.ext}`))
+    .filter((f) => isLocaleFile(f, layout.ext))
     .map((f) => f.slice(0, -(layout.ext.length + 1)))
     .sort();
 }
@@ -70,7 +78,12 @@ export function readLocaleTree(layout: LocaleLayout, lang: string, namespace: st
     return null;
   }
   const raw = readFileSync(path, 'utf8');
-  const parsed = layout.ext === 'json' ? JSON.parse(raw) : YAML.parse(raw);
+  const parsed =
+    layout.ext === 'ts'
+      ? parseTsLocaleModule(raw, path)
+      : layout.ext === 'json'
+        ? JSON.parse(raw)
+        : YAML.parse(raw);
   if (parsed === null || typeof parsed !== 'object') {
     throw new Error(`Locale file is not an object: ${path}`);
   }
@@ -86,7 +99,11 @@ export function writeLocaleTree(
   const path = localeFilePath(layout, lang, namespace);
   mkdirSync(dirname(path), { recursive: true });
   const body =
-    layout.ext === 'json' ? `${JSON.stringify(tree, null, 2)}\n` : YAML.stringify(tree);
+    layout.ext === 'ts'
+      ? serializeTsLocaleModule(tree)
+      : layout.ext === 'json'
+        ? `${JSON.stringify(tree, null, 2)}\n`
+        : YAML.stringify(tree);
   writeFileSync(path, body, 'utf8');
   return path;
 }

@@ -35,6 +35,8 @@ my-app/
 └── i18n-agent.lock           # what's translated, what changed, what a human touched
 ```
 
+Locale files may be JSON, YAML, or **TypeScript modules** (`export default { … } as const;` — the layout typed web codebases use for compile-checked keys). The format is auto-detected from the source locale and mirrored to targets.
+
 1. You (or your agent) edit the **source** locale as part of normal feature work.
 2. `i18n-agent translate` diffs against the lockfile and translates **only new and changed keys**, batched through the subscription agent. Placeholders (`{name}`, `{{var}}`, `%s`, ICU plurals, HTML tags) are validated after translation — a violation gets one retry, then the key is reported instead of silently broken.
 3. Run it again — zero calls. The lockfile knows.

@@ -46,11 +46,16 @@ Same artifacts, served from the USER'S OWN backend — no cloud of ours, ever:
 - [x] Hot path off the filesystem — implemented in `BundleReader` (so every server companion gets it): in-memory content cache keyed by the manifest etag + throttled manifest stat (`statIntervalMs`, default 1s); mismatched mid-regeneration content is served but never cached
 - [x] `BundleReader`: manifest file lookups via `Object.hasOwn` — prototype-inherited keys no longer match as paths (was not exploitable thanks to the path prefix-check, pure hygiene)
 
+## v0.4 — TS-module locale layout · SHIPPED in 0.4.0
+
+- [x] `export default { … } as const;` as a first-class locale format alongside JSON/YAML (auto-detected from the source locale, mirrored to targets) — typed web codebases keep their compile-checked keys while adopting the canonical-locales flow
+- [x] Reader: string/comment-aware balanced scan of the default export (`as const` / `satisfies` inside translated text cannot confuse it), inner assertions stripped, evaluation in an empty vm sandbox — modules must be self-contained (no imported values; template interpolation rejected with a clear error); result realm-normalized via JSON round-trip
+- [x] Writer: deterministic emitter (bare identifier keys, single-quoted strings, 2-space indent, `as const` suffix); `.d.ts` codegen neighbours are ignored when detecting namespaces
+
 ## v2 — ideas (gated on v0.1 traction)
 
 - [ ] **`/i18nify` — the killer skill**: agent-driven i18n-фикация of a legacy project with hardcoded strings — wrap strings in `t()`, generate keys and the source locale, wire the i18n library. Extraction tools do half of this badly; agents can do all of it. Potentially the strongest wedge of the family.
 - [ ] More formats: gettext PO, CSV, ARB (Flutter), Android XML / iOS strings
-- [ ] TS-module locale resources (`export default {...} as const`) as a first-class layout — typed web codebases keep locales as TS, not JSON; needed before such a project can adopt the canonical-locales flow without giving up key typing
 - [ ] Upstream integrations: consume i18next-parser / FormatJS extractor output
 - [ ] More providers: cursor-cli and OpenAI-compatible endpoints via core exports, Ollama for fully local
 - [ ] MCP tool for cloud agents (no hooks there — same pattern as *-translate)
