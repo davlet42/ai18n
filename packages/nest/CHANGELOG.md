@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4 (2026-08-03)
+
+- Depend on `i18n-agent@^0.6.0` (recurring `--source-only` client sync).
+
 ## 0.1.3 (2026-07-13)
 
 - Depend on `i18n-agent@^0.5.0`.

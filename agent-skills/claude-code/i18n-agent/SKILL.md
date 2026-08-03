@@ -26,6 +26,11 @@ correctly: **you author the source locale; i18n-agent owns the targets.**
 ## Working in a project that already has i18n-agent (config file present)
 
 - After adding or changing keys in the source locale: `npx i18n-agent translate`.
+- When the source of truth for English is a client `values/strings.xml` (or
+  similar) next to a backend that owns the canonical set: run
+  `npx i18n-agent import --platform android --in <path> --source-only` to refresh
+  only the source language (safe to re-run; targets untouched), then `translate`.
+  Export targets for the client; they must not overwrite their authored `values/`.
 - Before committing: `npx i18n-agent check`.
 - Adding a language: `npx i18n-agent add-locale <lang> --translate`.
 - A string that needs disambiguation ("Book" — verb or noun?) gets a one-line

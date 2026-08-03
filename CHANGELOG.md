@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0 (2026-08-03)
+
+**Recurring client source sync** — keep English in the client repo; refresh the canonical source on request without clobbering target locales:
+
+- `i18n-agent import … --source-only`: writes **only** the config source language; always replaces that namespace file (idempotent — no `--force`); leaves `ru`/`de`/… locale files untouched
+- Android `--in` accepts `res/`, `values/`, or a `strings.xml` file; under `res/` with `--source-only`, sibling `values-<lang>/` directories are ignored
+- Full multi-language migration (`import` without `--source-only`) unchanged: still refuses overwrite without `--force`
+- Docs: recurring sync flow in README (client keeps `values/` → backend `--source-only` → `translate` → client commits only `values-<lang>/`)
+
 ## 0.5.0 (2026-07-13)
 
 **Import sources** — migrate an existing app's native translations into the canonical set once, keeping every human translation:

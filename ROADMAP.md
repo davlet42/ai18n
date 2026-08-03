@@ -52,6 +52,12 @@ Same artifacts, served from the USER'S OWN backend — no cloud of ours, ever:
 - [x] Reader: string/comment-aware balanced scan of the default export (`as const` / `satisfies` inside translated text cannot confuse it), inner assertions stripped, evaluation in an empty vm sandbox — modules must be self-contained (no imported values; template interpolation rejected with a clear error); result realm-normalized via JSON round-trip
 - [x] Writer: deterministic emitter (bare identifier keys, single-quoted strings, 2-space indent, `as const` suffix); `.d.ts` codegen neighbours are ignored when detecting namespaces
 
+## v0.6 — recurring client source sync · SHIPPED in 0.6.0
+
+- [x] `i18n-agent import --source-only` — refresh **only** the config source language from a native client path; always replaces that namespace file (idempotent, no `--force`); never writes target locales
+- [x] Android `--in` accepts `res/`, `values/`, or a `strings.xml` file; with `--source-only`, sibling `values-<lang>/` dirs are ignored even when present under `res/`
+- [x] Docs: recurring sync flow (client keeps English → backend import --source-only → translate → client commits `values-<lang>/` only)
+
 ## v0.5 — import sources · SHIPPED in 0.5.0
 
 - [x] `i18n-agent import --platform android --in <resDir>` — values*/strings.xml → canonical locales: `<plurals>` → ICU plural, `<string-array>` → arrays, entities/escapes unescaped, `translatable="false"` skipped, non-language qualifier dirs ignored; existing files are never clobbered without `--force`

@@ -1,8 +1,8 @@
 import type { Leaf, LocaleTree } from '../locale-files.js';
 
-// Android strings.xml → canonical locale tree (the import direction, for a
-// project migrating its existing per-platform translations into one canonical
-// set). A tolerant regex parser for the constrained resource format —
+// Android strings.xml → canonical locale tree (migration and recurring
+// --source-only sync of the client's English values/). A tolerant regex
+// parser for the constrained resource format —
 // <string>, <plurals>, <string-array>; CDATA is out of scope (documented).
 // translatable="false" entries are skipped: brand constants stay app-side.
 // Reversals of the exporter transforms where reversible: XML entities and

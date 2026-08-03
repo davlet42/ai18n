@@ -102,11 +102,12 @@ The guides encode the ownership rules (source is yours, targets are machine-owne
 
 ## Status
 
-**v0.1 engine complete and live-verified** (2026-07-12): 20-string demo translated to ru+es in 2 agent calls through the subscription; repeat runs cost 0 calls; ICU plurals, glossary pinning, rename migration and the review flow verified end-to-end. 33/33 tests. See [ROADMAP.md](./ROADMAP.md) for what's next (`/i18nify` is coming). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate) — the engine behind [cursor-translate](https://github.com/davlet42/cursor-translate) and [claude-translate](https://github.com/davlet42/claude-translate).
+**v0.6.0** — recurring `--source-only` client sync (Android/iOS source → canonical, targets untouched). Engine live-verified since 0.1; multi-platform export, self-hosted bundle, TS locales, and native import shipped through 0.5. See [ROADMAP.md](./ROADMAP.md). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate).
 
-## Migrating an existing app: import your native translations
+## Migrating an existing app / syncing a client source locale
 
-Already shipping with per-platform locales? Pull them into the canonical set once — keeping every human translation:
+Already shipping with per-platform locales? Pull them into the canonical set —
+keeping every human translation on first import:
 
 ```bash
 i18n-agent import --platform android --in app/src/main/res
@@ -116,6 +117,25 @@ i18n-agent import --platform ios-xcstrings --in Localizable.xcstrings
 - **Android**: `values*/strings.xml` land in one namespace (default `android`); `<plurals>` become ICU plural, `<string-array>` arrays; `translatable="false"` brand constants are skipped; non-language qualifier dirs (`values-night`, `values-v21`) are ignored.
 - **iOS**: dot keys become nesting and the top-level segment becomes the namespace (`auth.signIn.title` → `auth.json`); plural variations become ICU plural; Apple specifiers (`%@`, `%lld`) are understood by the placeholder guard.
 - Then run `i18n-agent translate`: every pre-existing translation is **adopted as human-owned** — sacred, never overwritten; only genuinely missing keys hit the translator.
+- Full migration refuses to overwrite existing locale files without `--force`.
+
+### Recurring sync: client keeps English, backend owns translations
+
+When a mobile client authors English in-repo (Android `values/strings.xml`) and
+you only want to refresh the **source** language in the canonical set — without
+touching `values-ru` / target JSON — use `--source-only`. Safe to re-run whenever
+the client asks for new translations:
+
+```bash
+# --in may be res/, values/, or values/strings.xml
+i18n-agent import --platform android --in ../android-app/app/src/main/res --source-only
+i18n-agent translate
+i18n-agent export --bundle   # or export --platform android; client commits values-<lang>/ only
+```
+
+`--source-only` always replaces the source namespace file (no `--force`), ignores
+sibling `values-<lang>/` dirs, and never writes target locales. Clients must not
+overwrite their own `values/` from the export — take only `values-<lang>/`.
 
 ## Honest economics
 

@@ -16,6 +16,11 @@ the user's subscription via `npx i18n-agent …`. Rules:
 - New project: `npx i18n-agent init` → `npx i18n-agent add-locale <lang> --translate`.
 - After source-locale changes: `npx i18n-agent translate`. Before commit:
   `npx i18n-agent check` (CI gate, exit 1 on drift).
+- When English lives in an Android (or iOS) client repo and the canonical set is
+  on a backend: refresh source with
+  `npx i18n-agent import --platform android --in <res|values|strings.xml> --source-only`
+  (idempotent; does not touch target locales), then `translate`. Clients commit
+  only `values-<lang>/` from export — never overwrite their authored `values/`.
 - Keep placeholders byte-identical in source edits: `{var}`, `{{var}}`,
   printf, `$t(...)`, HTML tags, ICU plural/select.
 - "Awaiting review" keys (`npx i18n-agent translate --review`) are the USER's

@@ -206,4 +206,88 @@ describe('runImport end-to-end', () => {
     const raw = readFileSync(join(root, 'locales', 'en', 'android.ts'), 'utf8');
     assert.ok(raw.startsWith('export default {'), 'import follows the detected TS layout');
   });
+
+  it('android --source-only: refreshes en only, idempotent, leaves target locales alone', () => {
+    const root = mkdtempSync(join(tmpdir(), 'i18n-agent-import-'));
+    setupConfig(root, ['ru']);
+    const res = join(root, 'app-res');
+    mkdirSync(join(res, 'values'), { recursive: true });
+    mkdirSync(join(res, 'values-ru'), { recursive: true });
+    writeFileSync(
+      join(res, 'values', 'strings.xml'),
+      '<resources><string name="greet">Hello</string></resources>',
+    );
+    writeFileSync(
+      join(res, 'values-ru', 'strings.xml'),
+      '<resources><string name="greet">Привет-from-android</string></resources>',
+    );
+    mkdirSync(join(root, 'locales', 'en'), { recursive: true });
+    mkdirSync(join(root, 'locales', 'ru'), { recursive: true });
+    writeFileSync(join(root, 'locales', 'en', 'android.json'), `${JSON.stringify({ greet: 'Old' })}\n`);
+    writeFileSync(
+      join(root, 'locales', 'ru', 'android.json'),
+      `${JSON.stringify({ greet: 'Канонический' })}\n`,
+    );
+
+    assert.equal(
+      runImport(root, ['--platform', 'android', '--in', 'app-res', '--source-only']),
+      0,
+    );
+    assert.deepEqual(JSON.parse(readFileSync(join(root, 'locales', 'en', 'android.json'), 'utf8')), {
+      greet: 'Hello',
+    });
+    assert.deepEqual(
+      JSON.parse(readFileSync(join(root, 'locales', 'ru', 'android.json'), 'utf8')),
+      { greet: 'Канонический' },
+      'target locale must not be overwritten by --source-only',
+    );
+
+    writeFileSync(
+      join(res, 'values', 'strings.xml'),
+      '<resources><string name="greet">Hello</string><string name="bye">Bye</string></resources>',
+    );
+    assert.equal(
+      runImport(root, ['--platform', 'android', '--in', 'app-res', '--source-only']),
+      0,
+      'second --source-only run must succeed without --force',
+    );
+    assert.deepEqual(JSON.parse(readFileSync(join(root, 'locales', 'en', 'android.json'), 'utf8')), {
+      greet: 'Hello',
+      bye: 'Bye',
+    });
+  });
+
+  it('android --source-only accepts values/ or strings.xml path', () => {
+    const root = mkdtempSync(join(tmpdir(), 'i18n-agent-import-'));
+    setupConfig(root, ['ru']);
+    const values = join(root, 'values');
+    mkdirSync(values, { recursive: true });
+    writeFileSync(
+      join(values, 'strings.xml'),
+      '<resources><string name="a">A</string></resources>',
+    );
+
+    assert.equal(runImport(root, ['--platform', 'android', '--in', 'values', '--source-only']), 0);
+    assert.deepEqual(JSON.parse(readFileSync(join(root, 'locales', 'en', 'android.json'), 'utf8')), {
+      a: 'A',
+    });
+
+    writeFileSync(
+      join(values, 'strings.xml'),
+      '<resources><string name="a">A2</string></resources>',
+    );
+    assert.equal(
+      runImport(root, [
+        '--platform',
+        'android',
+        '--in',
+        join('values', 'strings.xml'),
+        '--source-only',
+      ]),
+      0,
+    );
+    assert.deepEqual(JSON.parse(readFileSync(join(root, 'locales', 'en', 'android.json'), 'utf8')), {
+      a: 'A2',
+    });
+  });
 });
