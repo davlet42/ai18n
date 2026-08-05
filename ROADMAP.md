@@ -52,6 +52,12 @@ Same artifacts, served from the USER'S OWN backend — no cloud of ours, ever:
 - [x] Reader: string/comment-aware balanced scan of the default export (`as const` / `satisfies` inside translated text cannot confuse it), inner assertions stripped, evaluation in an empty vm sandbox — modules must be self-contained (no imported values; template interpolation rejected with a clear error); result realm-normalized via JSON round-trip
 - [x] Writer: deterministic emitter (bare identifier keys, single-quoted strings, 2-space indent, `as const` suffix); `.d.ts` codegen neighbours are ignored when detecting namespaces
 
+## v0.7 — Android export for client R.string pilots · SHIPPED in 0.7.0
+
+- [x] `exports[].platform: android` → `namespaces: […]` filter (skip server namespaces in `strings.xml`)
+- [x] `prefixNamespace: false` → bare resource names matching Android `R.string.*` (default still prefixes `<ns>_`)
+- [x] Same options apply to `export --bundle` android XML (`GET /i18n/android/…`)
+
 ## v0.6 — recurring client source sync · SHIPPED in 0.6.0
 
 - [x] `i18n-agent import --source-only` — refresh **only** the config source language from a native client path; always replaces that namespace file (idempotent, no `--force`); never writes target locales

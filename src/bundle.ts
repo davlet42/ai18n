@@ -11,6 +11,7 @@ import {
 import { emitAndroidXml } from './exporters/android.js';
 import { emitXcstrings } from './exporters/xcstrings.js';
 import { emitTsKeys } from './exporters/simple.js';
+import { androidOptionsFromConfig, selectNamespaces } from './commands/export.js';
 
 // Self-hosted delivery, part 1: `i18n-agent export --bundle` produces ONE
 // versioned directory that any server can mount behind a static route:
@@ -90,9 +91,19 @@ export function buildBundle(config: I18nAgentConfig, outOverride?: string): Buil
     }
   }
 
-  // android
+  // android — respects the first `exports: [{ platform: android, … }]` options
+  // (namespaces filter + prefixNamespace) so GET /i18n/android/… matches the
+  // files `i18n-agent export --platform android` would write.
+  const androidOpts = androidOptionsFromConfig(config.exportsRaw, config.root);
+  const { selected: androidNs, unknown: androidUnknown } = selectNamespaces(
+    namespaces,
+    androidOpts.namespaces,
+  );
+  for (const name of androidUnknown) {
+    warnings.push(`[android] namespaces filter: unknown namespace "${name}"`);
+  }
   for (const lang of languages) {
-    const nsInput = namespaces
+    const nsInput = androidNs
       .map((ns) => ({
         namespace: ns,
         tree: trees.get(ns)?.get(lang),
@@ -100,7 +111,9 @@ export function buildBundle(config: I18nAgentConfig, outOverride?: string): Buil
       }))
       .filter((x): x is { namespace: string; tree: LocaleTree; sourceTree: LocaleTree } => !!x.tree && !!x.sourceTree);
     if (nsInput.length === 0) continue;
-    const { xml, warnings: w } = emitAndroidXml(nsInput);
+    const { xml, warnings: w } = emitAndroidXml(nsInput, {
+      prefixNamespace: androidOpts.prefixNamespace,
+    });
     warnings.push(...w.map((m) => `[android/${lang}] ${m}`));
     put(`android/res/${lang === config.source ? 'values' : `values-${lang}`}/strings.xml`, xml);
   }

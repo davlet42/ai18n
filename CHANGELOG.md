@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.0 (2026-08-05)
+
+**Android export for client pilots** — namespaces layout no longer forces `android_nav_overview` into `R.string`:
+
+- `exports[].platform: android` options:
+  - `namespaces: [android]` (or singular `namespace: android`) — emit only those locale namespaces into `values-<lang>/strings.xml` (server `auth`/`email`/… stay out)
+  - `prefixNamespace: false` — resource names are bare keys (`nav_overview`), matching Android `R.string.*`; default remains `true` (`android_nav_overview`) for backward compatibility
+- The same options drive `i18n-agent export --bundle` android XML, so `GET /i18n/android/res/values-<lang>/strings.xml` matches what a file export would write
+- Duplicate bare names across filtered namespaces are warned (not silently merged)
+
+Companion: `i18n-agent-nest@0.1.5` tracks `i18n-agent@^0.7.0`.
+
 ## 0.6.0 (2026-08-03)
 
 **Recurring client source sync** — keep English in the client repo; refresh the canonical source on request without clobbering target locales:

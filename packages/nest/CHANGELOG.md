@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5 (2026-08-05)
+
+- Depend on `i18n-agent@^0.7.0` (Android export `namespaces` filter + `prefixNamespace`).
+
 ## 0.1.4 (2026-08-03)
 
 - Depend on `i18n-agent@^0.6.0` (recurring `--source-only` client sync).

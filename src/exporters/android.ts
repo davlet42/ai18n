@@ -4,15 +4,30 @@ import type { Leaf, LocaleTree } from '../locale-files.js';
 import { collectArgOrder, findIcuMessage, hasSecondIcuMessage, toPositional } from './transform.js';
 
 // Android emitter: values-<lang>/strings.xml (source language → values/).
-// Keys `ns:a.b` become resource names `ns_a_b`; ICU plural → <plurals>;
-// string arrays → <string-array>; named placeholders → positional %n$s
-// with the argument order taken from the SOURCE language string.
+// Keys `ns:a.b` become resource names `ns_a_b` by default (or bare `a_b` when
+// prefixNamespace is false); ICU plural → <plurals>; string arrays →
+// <string-array>; named placeholders → positional %n$s with the argument
+// order taken from the SOURCE language string.
 
 const ANDROID_PLURAL_QUANTITIES = new Set(['zero', 'one', 'two', 'few', 'many', 'other']);
 const EXPLICIT_QUANTITY: Record<string, string> = { '=0': 'zero', '=1': 'one', '=2': 'two' };
 
-export function androidResourceName(namespace: string, key: string): string {
-  const raw = namespace ? `${namespace}_${key}` : key;
+export interface AndroidEmitOptions {
+  /**
+   * When true (default), resource names are `<namespace>_<key>`
+   * (`android_nav_overview`). When false, only the key is used (`nav_overview`)
+   * so names match `R.string.*` in an Android client that authored the source.
+   */
+  prefixNamespace?: boolean;
+}
+
+export function androidResourceName(
+  namespace: string,
+  key: string,
+  options: AndroidEmitOptions = {},
+): string {
+  const prefix = options.prefixNamespace !== false;
+  const raw = prefix && namespace ? `${namespace}_${key}` : key;
   return raw.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').replace(/^(\d)/, 'k$1');
 }
 
@@ -41,6 +56,8 @@ interface Entry {
   value?: string;
   items?: { quantity: string; value: string }[];
   arrayItems?: string[];
+  fromNs: string;
+  fromPath: string;
 }
 
 function walk(
@@ -50,6 +67,7 @@ function walk(
   prefix: string,
   out: Entry[],
   warn: AndroidWarnings,
+  options: AndroidEmitOptions,
 ): void {
   if (Array.isArray(tree)) {
     return; // handled by parent as string-array
@@ -59,22 +77,28 @@ function walk(
     const sourceValue = Array.isArray(sourceTree) ? undefined : (sourceTree as Record<string, LocaleTree | Leaf>)[k];
     if (Array.isArray(v)) {
       const items = v.filter((x): x is string => typeof x === 'string');
-      out.push({ kind: 'array', name: androidResourceName(namespace, path), arrayItems: items });
+      out.push({
+        kind: 'array',
+        name: androidResourceName(namespace, path, options),
+        arrayItems: items,
+        fromNs: namespace,
+        fromPath: path,
+      });
       continue;
     }
     if (v !== null && typeof v === 'object') {
-      walk(v, (sourceValue ?? {}) as LocaleTree, namespace, path, out, warn);
+      walk(v, (sourceValue ?? {}) as LocaleTree, namespace, path, out, warn, options);
       continue;
     }
     if (typeof v !== 'string' || v === '') {
       continue; // numbers/booleans/null/empty are not string resources
     }
     const src = typeof sourceValue === 'string' ? sourceValue : v;
-    const name = androidResourceName(namespace, path);
+    const name = androidResourceName(namespace, path, options);
 
     if (hasSecondIcuMessage(src)) {
       warn.warnings.push(`${namespace}:${path} — multiple ICU blocks; exported verbatim`);
-      out.push({ kind: 'string', name, value: escapeAndroid(v) });
+      out.push({ kind: 'string', name, value: escapeAndroid(v), fromNs: namespace, fromPath: path });
       continue;
     }
 
@@ -95,27 +119,49 @@ function walk(
         const srcFull = `${srcIcu.before}${srcBody}${srcIcu.after}`;
         items.push({ quantity, value: escapeAndroid(positionalize(full, srcFull, true)) });
       }
-      out.push({ kind: 'plurals', name, items });
+      out.push({ kind: 'plurals', name, items, fromNs: namespace, fromPath: path });
       continue;
     }
     if (icu && icu.keyword !== 'plural') {
       warn.warnings.push(`${namespace}:${path} — ICU ${icu.keyword} has no Android equivalent; exported verbatim`);
-      out.push({ kind: 'string', name, value: escapeAndroid(v) });
+      out.push({ kind: 'string', name, value: escapeAndroid(v), fromNs: namespace, fromPath: path });
       continue;
     }
 
-    out.push({ kind: 'string', name, value: escapeAndroid(positionalize(v, src, false)) });
+    out.push({
+      kind: 'string',
+      name,
+      value: escapeAndroid(positionalize(v, src, false)),
+      fromNs: namespace,
+      fromPath: path,
+    });
+  }
+}
+
+function warnDuplicateNames(entries: Entry[], warn: AndroidWarnings): void {
+  const first = new Map<string, Entry>();
+  for (const e of entries) {
+    const prev = first.get(e.name);
+    if (prev) {
+      warn.warnings.push(
+        `duplicate Android resource name "${e.name}" from ${prev.fromNs}:${prev.fromPath} and ${e.fromNs}:${e.fromPath}`,
+      );
+    } else {
+      first.set(e.name, e);
+    }
   }
 }
 
 export function emitAndroidXml(
   namespaces: { namespace: string; tree: LocaleTree; sourceTree: LocaleTree }[],
+  options: AndroidEmitOptions = {},
 ): { xml: string; warnings: string[] } {
   const warn: AndroidWarnings = { warnings: [] };
   const entries: Entry[] = [];
   for (const { namespace, tree, sourceTree } of namespaces) {
-    walk(tree, sourceTree, namespace, '', entries, warn);
+    walk(tree, sourceTree, namespace, '', entries, warn, options);
   }
+  warnDuplicateNames(entries, warn);
 
   const lines: string[] = ['<?xml version="1.0" encoding="utf-8"?>', '<!-- generated by i18n-agent — do not edit -->', '<resources>'];
   for (const e of entries) {

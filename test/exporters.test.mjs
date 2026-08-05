@@ -83,6 +83,71 @@ describe('android emitter', () => {
     assert.equal(androidResourceName('', '1st.key'), 'k1st_key');
     assert.equal(escapeAndroid("it's"), "it\\'s");
   });
+
+  it('omits the namespace prefix when prefixNamespace is false', () => {
+    assert.equal(androidResourceName('android', 'nav_overview', { prefixNamespace: false }), 'nav_overview');
+    const { xml, warnings } = emitAndroidXml(
+      [
+        {
+          namespace: 'android',
+          tree: { nav_overview: 'Overview', greet: 'Hi {name}' },
+          sourceTree: { nav_overview: 'Overview', greet: 'Hi {name}' },
+        },
+        {
+          namespace: 'auth',
+          tree: { login: 'Log in' },
+          sourceTree: { login: 'Log in' },
+        },
+      ],
+      { prefixNamespace: false },
+    );
+    assert.deepEqual(warnings, []);
+    assert.ok(xml.includes('<string name="nav_overview">Overview</string>'), xml);
+    assert.ok(xml.includes('<string name="greet">Hi %1$s</string>'), xml);
+    assert.ok(xml.includes('<string name="login">Log in</string>'), xml);
+    assert.ok(!xml.includes('android_nav_overview'), xml);
+    assert.ok(!xml.includes('auth_login'), xml);
+  });
+
+  it('warns on duplicate resource names when prefixes are stripped', () => {
+    const { warnings } = emitAndroidXml(
+      [
+        { namespace: 'android', tree: { title: 'A' }, sourceTree: { title: 'A' } },
+        { namespace: 'auth', tree: { title: 'B' }, sourceTree: { title: 'B' } },
+      ],
+      { prefixNamespace: false },
+    );
+    assert.equal(warnings.length, 1);
+    assert.match(warnings[0], /duplicate Android resource name "title"/);
+  });
+});
+
+describe('android export options parsing', () => {
+  it('parses namespaces filter and prefixNamespace from exports config', async () => {
+    const { parseExports, selectNamespaces, parseAndroidExportOptions } = await import('../dist/index.js');
+    const entries = parseExports(
+      [
+        {
+          platform: 'android',
+          out: '../app/res',
+          namespaces: ['android'],
+          prefixNamespace: false,
+        },
+        { platform: 'web-json', out: '../web' },
+      ],
+      '/tmp/project',
+    );
+    assert.equal(entries.length, 2);
+    assert.deepEqual(entries[0].android, { namespaces: ['android'], prefixNamespace: false });
+    assert.equal(entries[1].android, undefined);
+
+    const singular = parseAndroidExportOptions({ namespace: 'android', prefixNamespace: true });
+    assert.deepEqual(singular, { namespaces: ['android'], prefixNamespace: true });
+
+    const { selected, unknown } = selectNamespaces(['auth', 'android', 'email'], ['android', 'missing']);
+    assert.deepEqual(selected, ['android']);
+    assert.deepEqual(unknown, ['missing']);
+  });
 });
 
 describe('xcstrings emitter', () => {

@@ -55,6 +55,8 @@ Your product has web, Android and iOS? Keep ONE canonical set of locales (typica
 exports:
   - platform: android        # values-<lang>/strings.xml, ICU plural → <plurals>, arrays → <string-array>
     out: ../android-app/app/src/main/res
+    namespaces: [android]    # optional — only this locale ns (skip server auth/email/…)
+    prefixNamespace: false   # optional — R.string.nav_overview instead of android_nav_overview
   - platform: ios-xcstrings  # single Localizable.xcstrings (String Catalog), plural variations
     out: ../ios-app/Resources
   - platform: web-json       # canonical layout re-emitted as JSON
@@ -63,6 +65,7 @@ exports:
     out: ../web-app/src/i18n
 ```
 
+For a mobile pilot that keeps English in the Android repo under namespace `android`, set `namespaces: [android]` and `prefixNamespace: false` so the served / exported `strings.xml` matches `R.string.*`. Those options also apply to `export --bundle` (self-hosted `GET /i18n/android/…`).
 `i18n-agent export` after `translate`. Named placeholders become positional per platform (`{name}` → `%1$s` / `%1$@`) with the argument order taken from the **source** string — every language numbers the same argument identically, even when a translation reorders the sentence.
 
 Delivery is yours to choose: publish the export dir as a CI/release artifact and fetch it in client builds (OpenAPI-style), keep clients in a monorepo, or let a bot PR the generated files.

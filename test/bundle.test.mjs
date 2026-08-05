@@ -65,6 +65,50 @@ describe('buildBundle', () => {
     const overridden = buildBundle(loadConfig(root), 'custom-out');
     assert.ok(overridden.outDir.endsWith('custom-out'));
   });
+
+  it('applies android export namespaces + prefixNamespace to the bundle XML', () => {
+    const root = setupProject();
+    writeFileSync(
+      join(root, 'locales', 'en', 'android.json'),
+      JSON.stringify({ nav_overview: 'Overview' }),
+    );
+    writeFileSync(
+      join(root, 'locales', 'ru', 'android.json'),
+      JSON.stringify({ nav_overview: 'Обзор' }),
+    );
+    writeFileSync(
+      join(root, 'locales', 'en', 'auth.json'),
+      JSON.stringify({ login: 'Log in' }),
+    );
+    writeFileSync(
+      join(root, 'locales', 'ru', 'auth.json'),
+      JSON.stringify({ login: 'Войти' }),
+    );
+    writeFileSync(
+      join(root, 'i18n-agent.config.yaml'),
+      [
+        'source: en',
+        'targets: [ru]',
+        'locales: locales',
+        'exports:',
+        '  - platform: android',
+        '    out: ../android-res',
+        '    namespaces: [android]',
+        '    prefixNamespace: false',
+        '',
+      ].join('\n'),
+    );
+    const { outDir, warnings } = buildBundle(loadConfig(root));
+    assert.deepEqual(warnings, []);
+    const xml = readFileSync(join(outDir, 'android', 'res', 'values-ru', 'strings.xml'), 'utf8');
+    assert.ok(xml.includes('<string name="nav_overview">Обзор</string>'), xml);
+    assert.ok(!xml.includes('android_nav_overview'), xml);
+    assert.ok(!xml.includes('auth_login'), xml);
+    assert.ok(!xml.includes('name="login"'), xml);
+    // web still has all namespaces
+    assert.ok(existsSync(join(outDir, 'web', 'ru', 'auth.json')));
+    assert.ok(existsSync(join(outDir, 'web', 'ru', 'android.json')));
+  });
 });
 
 describe('BundleReader', () => {
