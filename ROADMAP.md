@@ -60,10 +60,11 @@ KinCassa pilot feedback (MissingQuantity, extra `%n$s`, stripped `<annotation>`)
 - [x] `i18n-agent check --platform android` — validates filtered `exports[].platform: android` namespaces (or all when no filter): ICU plural completeness, printf/`{name}`/`#` parity vs source, `<annotation>` tags verbatim
 - [x] Exported validators + unit tests on KinCassa-shaped fixtures
 
-## v0.8.1 — CLDR plural expansion (post-translate) · PLANNED
+## v0.8.1 — CLDR plural expansion (post-translate) · SHIPPED in 0.8.1
 
-- [ ] `expandPluralCategories(text, targetLang)` after translate; copy `other` into missing `many`/`few`/…
-- [ ] Optional `--expand-plurals=translate` for LLM fill of new categories only
+- [x] `expandPluralCategories(text, targetLang)` after translate; copy `other` into missing `many`/`few`/…
+- [x] Machine-owned `keep` rows expanded on rewrite; translator prompt lists required categories per target lang
+- [ ] Optional `--expand-plurals=translate` for LLM fill of new categories only (deferred)
 
 ## v0.8.2 — `<annotation>` mask-and-translate + export · PLANNED
 

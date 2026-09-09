@@ -23,6 +23,7 @@ import {
 } from './lockfile.js';
 import { appendRunMetrics } from './metrics.js';
 import { countPlan, planNamespace, type NamespacePlan, type PlanCounts } from './planner.js';
+import { expandPluralCategoriesIfNeeded } from './plural-expand.js';
 import {
   claudeCliTransport,
   translateBatch,
@@ -226,8 +227,24 @@ export async function applySync(
       const values = new Map<string, Leaf>();
       for (const action of plan.actions) {
         const id = keyId(ns, action.key);
+        const sourceText = sourceFlat.get(action.key);
+        const finalizeMachineString = (value: string): string => {
+          if (typeof sourceText !== 'string') {
+            return value;
+          }
+          const expanded = expandPluralCategoriesIfNeeded(sourceText, value, lang);
+          recordTranslation(state.lock, id, lang, sourceText, expanded);
+          return expanded;
+        };
         switch (action.type) {
-          case 'keep':
+          case 'keep': {
+            if (typeof action.value === 'string' && state.lock.keys[id]?.targets[lang]?.by === 'machine') {
+              values.set(action.key, finalizeMachineString(action.value));
+            } else {
+              values.set(action.key, action.value);
+            }
+            break;
+          }
           case 'copy':
             values.set(action.key, action.value);
             break;
@@ -237,12 +254,13 @@ export async function applySync(
             break;
           }
           case 'rename': {
-            values.set(action.key, action.value);
-            const sourceText = sourceFlat.get(action.key) as string;
             if (action.by === 'human') {
-              recordHumanValue(state.lock, id, lang, sourceText, action.value);
+              values.set(action.key, action.value);
+              if (typeof sourceText === 'string') {
+                recordHumanValue(state.lock, id, lang, sourceText, action.value);
+              }
             } else {
-              recordTranslation(state.lock, id, lang, sourceText, action.value);
+              values.set(action.key, finalizeMachineString(action.value));
             }
             result.migrated += 1;
             break;
@@ -251,8 +269,8 @@ export async function applySync(
           case 'retranslate': {
             const translated = batch.translations.get(id);
             if (translated !== undefined) {
-              values.set(action.key, translated);
-              recordTranslation(state.lock, id, lang, action.sourceText, translated);
+              const expanded = finalizeMachineString(translated);
+              values.set(action.key, expanded);
               result.translated += 1;
             }
             // failed or quota: no value → the key is omitted from the target
@@ -271,8 +289,7 @@ export async function applySync(
             if (options.retranslateStale) {
               const translated = batch.translations.get(id);
               if (translated !== undefined) {
-                values.set(action.key, translated);
-                recordTranslation(state.lock, id, lang, action.sourceText, translated);
+                values.set(action.key, finalizeMachineString(translated));
                 result.translated += 1;
               } else {
                 values.set(action.key, action.currentValue);

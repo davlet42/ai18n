@@ -70,7 +70,12 @@ export { emitXcstrings } from './exporters/xcstrings.js';
 export { emitTsKeys } from './exporters/simple.js';
 export { collectArgOrder, toPositional, findIcuMessage } from './exporters/transform.js';
 
-export { cldrPluralCategoriesForLocale, ANDROID_CLDR_PLURAL_CATEGORIES } from './android-plural-rules.js';
+export {
+  cldrPluralCategoriesForLocale,
+  ANDROID_CLDR_PLURAL_CATEGORIES,
+  normalizePluralCategoryName,
+} from './android-plural-rules.js';
+export { expandPluralCategories, expandPluralCategoriesIfNeeded } from './plural-expand.js';
 export { extractFormatArgs, validateFormatArgSet } from './validators/placeholder-set.js';
 export { extractAnnotationTags, validateAndroidMarkup } from './validators/android-markup.js';
 export { validateAndroidPlural, validateAndroidPluralPair } from './validators/android-plural.js';

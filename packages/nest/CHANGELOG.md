@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7 (2026-09-09)
+
+- Depend on `i18n-agent@^0.8.1` (CLDR plural expansion after translate).
+
 ## 0.1.6 (2026-09-09)
 
 - Depend on `i18n-agent@^0.8.0` (Android structural `check --platform android`).

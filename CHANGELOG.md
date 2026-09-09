@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.1 (2026-09-09)
+
+**CLDR plural expansion** — target locales get every Android-required quantity without hand-editing:
+
+- `expandPluralCategories` / `expandPluralCategoriesIfNeeded` copy the `other` form (fallback: `one`) into missing `many` / `few` / `zero` / `two` per locale
+- `translate` applies expansion after the agent for new/changed machine strings; machine-owned `keep` rows are expanded on the next run
+- Translator system prompt now lists required plural categories for the target language
+
+Companion: `i18n-agent-nest@0.1.7` tracks `i18n-agent@^0.8.1`.
+
 ## 0.8.0 (2026-09-09)
 
 **Android structural check** — catch KinCassa-class delivery bugs in CI before Gradle/Android Lint:

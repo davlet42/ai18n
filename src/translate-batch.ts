@@ -1,4 +1,5 @@
 import { translateTextClaudeCli } from '@cursor-translate/core';
+import { cldrPluralCategoriesForLocale } from './android-plural-rules.js';
 import { validatePlaceholders } from './placeholders.js';
 
 // Batch translation of UI strings through an injectable transport. The default
@@ -53,12 +54,16 @@ export function buildSystemPrompt(options: TranslateBatchOptions): string {
     options.glossaryTerms && options.glossaryTerms.length > 0
       ? `\nGlossary (follow strictly; "term = translation" pins a translation, a bare term must stay untranslated):\n${options.glossaryTerms.map((t) => `- ${t}`).join('\n')}\n`
       : '';
+  const pluralHint =
+    options.targetLang.length > 0
+      ? ` For ICU plural messages in ${options.targetLang}, include every required category: ${cldrPluralCategoriesForLocale(options.targetLang).join(', ')} (copy the "other" text when unsure).`
+      : '';
   return `You translate user-interface strings from ${options.sourceLang} to ${options.targetLang}.
 
 Rules:
 - Respond with ONLY a JSON object mapping every input id to its translation. No commentary, no code fences.
 - Preserve EVERY placeholder exactly as in the source: {var}, {{var}}, printf (%s, %1$s, %(name)s), $t(...) references, HTML tags such as <b>, </b>, <0>, <br/>.
-- ICU messages ({var, plural, ...} / {var, select, ...}): keep the variable, keyword and category names untouched; translate only the human text inside category bodies; keep every # as is.
+- ICU messages ({var, plural, ...} / {var, select, ...}): keep the variable, keyword and category names untouched; translate only the human text inside category bodies; keep every # as is.${pluralHint}
 - Translations must sound natural and terse, appropriate for UI labels, buttons and messages.
 - A "context" field, when present, describes where the string is used — follow it.
 ${glossary}`;
