@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.2 (2026-09-09)
+
+**Android `<annotation>` markup** — clickable Terms/Privacy spans survive translate + export:
+
+- `maskAndroidMarkup` replaces inner annotation text with `⟦n⟧` markers before the agent call; post-translation validation requires every `<annotation …>` / `</annotation>` tag verbatim
+- `escapeAndroidForResources` keeps inline annotation tags unescaped in `strings.xml` (other `<` / `>` still escaped)
+- `translate` retry path reports annotation markup violations alongside placeholder errors
+
+Companion: `i18n-agent-nest@0.1.8` tracks `i18n-agent@^0.8.2`.
+
 ## 0.8.1 (2026-09-09)
 
 **CLDR plural expansion** — target locales get every Android-required quantity without hand-editing:

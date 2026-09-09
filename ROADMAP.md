@@ -66,10 +66,10 @@ KinCassa pilot feedback (MissingQuantity, extra `%n$s`, stripped `<annotation>`)
 - [x] Machine-owned `keep` rows expanded on rewrite; translator prompt lists required categories per target lang
 - [ ] Optional `--expand-plurals=translate` for LLM fill of new categories only (deferred)
 
-## v0.8.2 — `<annotation>` mask-and-translate + export · PLANNED
+## v0.8.2 — `<annotation>` mask-and-translate + export · SHIPPED in 0.8.2
 
-- [ ] Mask inline Android markup before LLM; unmask after
-- [ ] `escapeAndroidForResources` whitelist for `<annotation>` (no `&lt;` escape)
+- [x] Mask inline Android `<annotation>` inner text with `⟦n⟧` markers before LLM; validate tags + attributes after
+- [x] `escapeAndroidForResources` whitelist for `<annotation>` / `</annotation>` (no `&lt;` escape in export)
 
 ## v0.7 — Android export for client R.string pilots · SHIPPED in 0.7.0
 

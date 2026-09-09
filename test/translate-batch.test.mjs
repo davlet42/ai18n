@@ -63,7 +63,7 @@ describe('translateBatch', () => {
       if (n === 1) {
         return JSON.stringify({ 'a:greet': 'Привет, имя!' }); // dropped {name}
       }
-      assert.ok(user.includes('PLACEHOLDER ERROR'), 'corrective context attached');
+      assert.ok(user.includes('VALIDATION ERROR'), 'corrective context attached');
       assert.ok(user.includes('{name}'), 'expected token spelled out');
       return JSON.stringify({ 'a:greet': 'Привет, {name}!' });
     };

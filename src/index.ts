@@ -77,7 +77,15 @@ export {
 } from './android-plural-rules.js';
 export { expandPluralCategories, expandPluralCategoriesIfNeeded } from './plural-expand.js';
 export { extractFormatArgs, validateFormatArgSet } from './validators/placeholder-set.js';
-export { extractAnnotationTags, validateAndroidMarkup } from './validators/android-markup.js';
+export {
+  extractAnnotationTags,
+  validateAndroidMarkup,
+  hasAndroidAnnotationMarkup,
+  maskAndroidMarkup,
+  unmaskAndroidMarkup,
+  escapeAndroidForResources,
+} from './android-markup.js';
+export type { AndroidMarkupMask } from './android-markup.js';
 export { validateAndroidPlural, validateAndroidPluralPair } from './validators/android-plural.js';
 export { runAndroidStructuralCheck, formatAndroidCheckIssues } from './validators/android-check.js';
 export type { AndroidCheckIssue, AndroidCheckKind, AndroidCheckOptions } from './validators/android-check.js';

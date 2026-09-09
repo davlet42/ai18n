@@ -1,4 +1,10 @@
 import { translateTextClaudeCli } from '@cursor-translate/core';
+import {
+  hasAndroidAnnotationMarkup,
+  maskAndroidMarkup,
+  unmaskAndroidMarkup,
+  validateAndroidMarkup,
+} from './android-markup.js';
 import { cldrPluralCategoriesForLocale } from './android-plural-rules.js';
 import { validatePlaceholders } from './placeholders.js';
 
@@ -63,6 +69,7 @@ export function buildSystemPrompt(options: TranslateBatchOptions): string {
 Rules:
 - Respond with ONLY a JSON object mapping every input id to its translation. No commentary, no code fences.
 - Preserve EVERY placeholder exactly as in the source: {var}, {{var}}, printf (%s, %1$s, %(name)s), $t(...) references, HTML tags such as <b>, </b>, <0>, <br/>.
+- Android <annotation> tags: keep every <annotation ...> and </annotation> tag and its attributes verbatim; translate only the human text between those tags (⟦n⟧ markers, when present, mark translatable spans inside annotations).
 - ICU messages ({var, plural, ...} / {var, select, ...}): keep the variable, keyword and category names untouched; translate only the human text inside category bodies; keep every # as is.${pluralHint}
 - Translations must sound natural and terse, appropriate for UI labels, buttons and messages.
 - A "context" field, when present, describes where the string is used — follow it.
@@ -111,6 +118,25 @@ function parseJsonObject(raw: string): Record<string, unknown> | null {
     // fall through
   }
   return null;
+}
+
+function validateTranslatedString(source: string, translated: string): { ok: boolean; issues: string[] } {
+  const placeholder = validatePlaceholders(source, translated);
+  const markup = validateAndroidMarkup(source, translated);
+  const issues = [
+    ...placeholder.missing.map((token) => `missing ${token}`),
+    ...placeholder.extra.map((token) => `extra ${token}`),
+    ...markup,
+  ];
+  return { ok: placeholder.ok && markup.length === 0, issues };
+}
+
+function maskItemForTranslation(item: BatchItem): { item: BatchItem; source: string } {
+  if (!hasAndroidAnnotationMarkup(item.text)) {
+    return { item, source: item.text };
+  }
+  const { masked, original } = maskAndroidMarkup(item.text);
+  return { item: { ...item, text: masked }, source: original };
 }
 
 export function claudeCliTransport(options: { model?: string } = {}): BatchTransport {
@@ -176,9 +202,13 @@ export async function translateBatch(
   const chunks = chunkItems(items, options.maxItemsPerCall ?? 40, options.maxCharsPerCall ?? 3000);
 
   for (const chunk of chunks) {
+    const maskedChunk = chunk.map((item) => maskItemForTranslation(item));
+    const requestItems = maskedChunk.map(({ item }) => item);
+    const sourceById = new Map(maskedChunk.map(({ item, source }) => [item.id, source]));
+
     let parsed: Record<string, unknown> | null;
     try {
-      parsed = await requestTranslations(transport, system, chunk, state);
+      parsed = await requestTranslations(transport, system, requestItems, state);
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
       for (const item of chunk) {
@@ -188,19 +218,20 @@ export async function translateBatch(
     }
 
     const violations: BatchItem[] = [];
-    for (const item of chunk) {
-      const translated = parsed?.[item.id];
-      if (typeof translated !== 'string' || translated.trim() === '') {
+    for (const { item, source } of maskedChunk) {
+      const raw = parsed?.[item.id];
+      if (typeof raw !== 'string' || raw.trim() === '') {
         result.failed.push({ id: item.id, reason: 'missing_in_response' });
         continue;
       }
-      const check = validatePlaceholders(item.text, translated);
+      const translated = unmaskAndroidMarkup(raw);
+      const check = validateTranslatedString(source, translated);
       if (check.ok) {
         result.translations.set(item.id, translated);
       } else {
         violations.push({
           ...item,
-          context: `${item.context ? `${item.context}. ` : ''}PLACEHOLDER ERROR in your previous attempt — the translation MUST contain exactly these tokens: ${[...check.missing, ...check.extra].join(' ')}`,
+          context: `${item.context ? `${item.context}. ` : ''}VALIDATION ERROR in your previous attempt — fix: ${check.issues.join('; ')}`,
         });
       }
     }
@@ -213,17 +244,16 @@ export async function translateBatch(
         retryParsed = null;
       }
       for (const item of violations) {
-        const translated = retryParsed?.[item.id];
-        const original = items.find((i) => i.id === item.id)!;
-        if (
-          typeof translated === 'string' &&
-          translated.trim() !== '' &&
-          validatePlaceholders(original.text, translated).ok
-        ) {
-          result.translations.set(item.id, translated);
-        } else {
-          result.failed.push({ id: item.id, reason: 'placeholder_violation' });
+        const raw = retryParsed?.[item.id];
+        const source = sourceById.get(item.id) ?? item.text;
+        if (typeof raw === 'string' && raw.trim() !== '') {
+          const translated = unmaskAndroidMarkup(raw);
+          if (validateTranslatedString(source, translated).ok) {
+            result.translations.set(item.id, translated);
+            continue;
+          }
         }
+        result.failed.push({ id: item.id, reason: 'placeholder_violation' });
       }
     }
   }

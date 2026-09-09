@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Leaf, LocaleTree } from '../locale-files.js';
+import { escapeAndroidForResources } from '../android-markup.js';
 import { collectArgOrder, findIcuMessage, hasSecondIcuMessage, toPositional } from './transform.js';
 
 // Android emitter: values-<lang>/strings.xml (source language → values/).
@@ -32,13 +33,7 @@ export function androidResourceName(
 }
 
 export function escapeAndroid(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/'/g, "\\'")
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, '\\n');
+  return escapeAndroidForResources(text);
 }
 
 function positionalize(value: string, sourceValue: string, hash: boolean): string {
