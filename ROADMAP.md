@@ -75,6 +75,11 @@ Same artifacts, served from the USER'S OWN backend — no cloud of ours, ever:
 - [x] Translate guard + explicit retry hint on all platforms; structural `check` composes shared scanner
 - [x] Extra `%2$s` when source has only `%1$s` fails check and translate
 
+## v0.8.5 — CLDR plural `#` parity · SHIPPED in 0.8.5
+
+- [x] `validateFormatArgSet` / `validatePlaceholders` accept CLDR-expanded plural targets (extra `#` / categories vs en `one/other` source)
+- [x] Translate guard no longer rejects valid post-expand plural translations
+
 ## v0.8.4 — Polish & release · SHIPPED in 0.8.4
 
 - [x] `cldr-plural-rules` / `validateCldrPlural*` — universal CLDR layer (Android names kept as aliases)

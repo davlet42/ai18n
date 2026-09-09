@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.11 (2026-09-09)
+
+- Depend on `i18n-agent@^0.8.5` (CLDR plural `#` parity for expanded targets).
+
 ## 0.1.10 (2026-09-09)
 
 - Depend on `i18n-agent@^0.8.4` (CLDR plural layer + `status --platform android`).

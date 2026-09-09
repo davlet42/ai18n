@@ -1,3 +1,4 @@
+import { findIcuMessage } from '../exporters/transform.js';
 import { extractPrintfArgs } from '../printf-args.js';
 
 const ICU_HEAD_RE = /^([\w.]+)\s*,\s*(plural|selectordinal|select)\s*,([\s\S]*)$/;
@@ -116,9 +117,24 @@ function multisetDiff(want: string[], got: string[]): { missing: string[]; extra
   return { missing, extra: pool };
 }
 
+function formatArgsForPluralPair(source: string, target: string): { want: string[]; got: string[] } {
+  let want = extractFormatArgs(source);
+  let got = extractFormatArgs(target);
+  const srcIcu = findIcuMessage(source);
+  const tgtIcu = findIcuMessage(target);
+  if (
+    srcIcu?.keyword === 'plural' &&
+    tgtIcu?.keyword === 'plural' &&
+    srcIcu.variable === tgtIcu.variable
+  ) {
+    want = want.filter((token) => token !== '#');
+    got = got.filter((token) => token !== '#');
+  }
+  return { want, got };
+}
+
 export function validateFormatArgSet(source: string, target: string): string[] {
-  const want = extractFormatArgs(source);
-  const got = extractFormatArgs(target);
+  const { want, got } = formatArgsForPluralPair(source, target);
   const { missing, extra } = multisetDiff(want, got);
   const issues: string[] = [];
   if (missing.length > 0) {

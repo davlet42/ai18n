@@ -105,7 +105,7 @@ The guides encode the ownership rules (source is yours, targets are machine-owne
 
 ## Status
 
-**v0.8.4** — universal CLDR plural + printf guards; `status --platform android`; Android `<annotation>` markup. See [ROADMAP.md](./ROADMAP.md). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate).
+**v0.8.5** — CLDR plural `#` parity for expanded targets; universal printf guards; `status --platform android`; Android `<annotation>` markup. See [ROADMAP.md](./ROADMAP.md). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate).
 
 ## Migrating an existing app / syncing a client source locale
 

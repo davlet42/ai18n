@@ -90,12 +90,9 @@ export function extractPlaceholderSignature(text: string): string[] {
         if (icu) {
           const [, variable, keyword, rest] = icu;
           const categories = parseIcuCategories(rest);
-          const names = categories.map((c) => c.name).sort();
-          tokens.push(`{${variable},${keyword},categories:${names.join('|')}}`);
+          // Category names and `#` counts are validated by CLDR plural rules — not here.
+          tokens.push(`{${variable},${keyword}}`);
           for (const category of categories) {
-            for (const hash of category.body.match(/#/g) ?? []) {
-              tokens.push(hash);
-            }
             tokens.push(...extractPlaceholderSignature(category.body.replace(/#/g, '')));
           }
         } else {

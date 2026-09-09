@@ -62,6 +62,12 @@ describe('format arg parity', () => {
     const target = '{count, plural, one {# fichier} other {# fichiers}}';
     assert.deepEqual(validateFormatArgSet(source, target), []);
   });
+
+  it('allows extra # when target has more CLDR plural categories than source', () => {
+    const source = '{count, plural, one {# document} other {# documents}}';
+    const target = '{count, plural, one {# document} many {# documents} other {# documents}}';
+    assert.deepEqual(validateFormatArgSet(source, target), []);
+  });
 });
 
 describe('android annotation markup', () => {

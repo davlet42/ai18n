@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-const { extractPlaceholderSignature, validatePlaceholders } = await import('../dist/index.js');
+const { extractPlaceholderSignature, validatePlaceholders, validateFormatArgSet } = await import(
+  '../dist/index.js'
+);
 
 describe('extractPlaceholderSignature', () => {
   it('extracts curly, double-curly, printf, $t and tags', () => {
@@ -33,14 +35,11 @@ describe('extractPlaceholderSignature', () => {
     assert.deepEqual(extractPlaceholderSignature('<a href="/x" class="y">link</a>'), ['</a>', '<a>']);
   });
 
-  it('builds an ICU signature: variable + keyword + sorted categories + inner tokens + #', () => {
+  it('builds an ICU signature: variable + keyword + inner tokens (# and categories checked elsewhere)', () => {
     const sig = extractPlaceholderSignature(
       'You have {count, plural, one {# file from {user}} other {# files from {user}}}.',
     );
-    assert.deepEqual(
-      sig,
-      ['#', '#', '{count,plural,categories:one|other}', '{user}', '{user}'].sort(),
-    );
+    assert.deepEqual(sig, ['{count,plural}', '{user}', '{user}'].sort());
   });
 });
 
@@ -57,11 +56,11 @@ describe('validatePlaceholders', () => {
     assert.deepEqual(check.extra.sort(), ['{имя}', '{{oops}}'].sort());
   });
 
-  it('catches a dropped ICU category', () => {
-    const source = '{count, plural, one {# item} few {# items} other {# items}}';
-    const bad = '{count, plural, one {# элемент} other {# элементов}}';
-    const check = validatePlaceholders(source, bad);
-    assert.equal(check.ok, false, 'few category dropped must fail');
+  it('accepts CLDR-expanded plural categories when inner placeholders match', () => {
+    const source = '{count, plural, one {# document} other {# documents}}';
+    const expanded = '{count, plural, one {# document} many {# documents} other {# documents}}';
+    assert.equal(validatePlaceholders(source, expanded).ok, true);
+    assert.deepEqual(validateFormatArgSet(source, expanded), []);
   });
 
   it('accepts a correct ICU translation with translated bodies', () => {

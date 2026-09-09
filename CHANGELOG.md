@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.5 (2026-09-09)
+
+**CLDR plural placeholder parity** — fixes false positives when targets have more ICU categories than English source:
+
+- `validateFormatArgSet` ignores `#` token count mismatches inside matching ICU plural blocks (category completeness stays in `validateCldrPlural`)
+- `validatePlaceholders` / translate guard: ICU signature uses `{var,keyword}` only — extra CLDR categories no longer fail the guard
+
+Companion: `i18n-agent-nest@0.1.11` tracks `i18n-agent@^0.8.5`.
+
 ## 0.8.4 (2026-09-09)
 
 **Cross-platform polish** — universal CLDR/printf layers and operator tooling:
