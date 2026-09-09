@@ -68,6 +68,14 @@ describe('format arg parity', () => {
     const target = '{count, plural, one {# document} many {# documents} other {# documents}}';
     assert.deepEqual(validateFormatArgSet(source, target), []);
   });
+
+  it('allows printf repeated per CLDR category when target has more plural forms', () => {
+    const source =
+      "{count, plural, one {You've used all # payment document.\nResets on %2$s} other {You've used all # payment documents.\nResets on %2$s}}";
+    const target =
+      '{count, plural, one {Vous avez utilisé tous les # documents.\nRéinitialisation le %2$s} many {Vous avez utilisé tous les # documents.\nRéinitialisation le %2$s} other {Vous avez utilisé tous les # documents.\nRéinitialisation le %2$s}}';
+    assert.deepEqual(validateFormatArgSet(source, target), []);
+  });
 });
 
 describe('android annotation markup', () => {

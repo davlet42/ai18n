@@ -117,25 +117,37 @@ function multisetDiff(want: string[], got: string[]): { missing: string[]; extra
   return { missing, extra: pool };
 }
 
-function formatArgsForPluralPair(source: string, target: string): { want: string[]; got: string[] } {
+function setDiff(want: string[], got: string[]): { missing: string[]; extra: string[] } {
+  const wantSet = new Set(want);
+  const gotSet = new Set(got);
+  return {
+    missing: [...wantSet].filter((token) => !gotSet.has(token)),
+    extra: [...gotSet].filter((token) => !wantSet.has(token)),
+  };
+}
+
+function formatArgsForPluralPair(
+  source: string,
+  target: string,
+): { want: string[]; got: string[]; useSetDiff: boolean } {
   let want = extractFormatArgs(source);
   let got = extractFormatArgs(target);
   const srcIcu = findIcuMessage(source);
   const tgtIcu = findIcuMessage(target);
-  if (
+  const useSetDiff =
     srcIcu?.keyword === 'plural' &&
     tgtIcu?.keyword === 'plural' &&
-    srcIcu.variable === tgtIcu.variable
-  ) {
-    want = want.filter((token) => token !== '#');
-    got = got.filter((token) => token !== '#');
+    srcIcu.variable === tgtIcu.variable;
+  if (useSetDiff) {
+    want = [...new Set(want.filter((token) => token !== '#'))].sort();
+    got = [...new Set(got.filter((token) => token !== '#'))].sort();
   }
-  return { want, got };
+  return { want, got, useSetDiff };
 }
 
 export function validateFormatArgSet(source: string, target: string): string[] {
-  const { want, got } = formatArgsForPluralPair(source, target);
-  const { missing, extra } = multisetDiff(want, got);
+  const { want, got, useSetDiff } = formatArgsForPluralPair(source, target);
+  const { missing, extra } = useSetDiff ? setDiff(want, got) : multisetDiff(want, got);
   const issues: string[] = [];
   if (missing.length > 0) {
     issues.push(`missing format args: ${missing.join(', ')}`);

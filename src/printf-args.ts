@@ -1,3 +1,5 @@
+import { findIcuMessage } from './exporters/transform.js';
+
 // Platform-agnostic printf placeholder extraction and parity checks.
 // Covers Android/Java (%1$s, %s), Apple xcstrings (%@, %1$@, %lld), and named %(user)s.
 // Used by translate guard (all platforms), structural check, and format-arg validators.
@@ -129,10 +131,31 @@ function multisetDiff(want: string[], got: string[]): { missing: string[]; extra
   return { missing, extra: pool };
 }
 
+function setDiff(want: string[], got: string[]): { missing: string[]; extra: string[] } {
+  const wantSet = new Set(want);
+  const gotSet = new Set(got);
+  return {
+    missing: [...wantSet].filter((token) => !gotSet.has(token)),
+    extra: [...gotSet].filter((token) => !wantSet.has(token)),
+  };
+}
+
+function isMatchingIcuPluralPair(source: string, target: string): boolean {
+  const srcIcu = findIcuMessage(source);
+  const tgtIcu = findIcuMessage(target);
+  return (
+    srcIcu?.keyword === 'plural' &&
+    tgtIcu?.keyword === 'plural' &&
+    srcIcu.variable === tgtIcu.variable
+  );
+}
+
 export function validatePrintfArgs(source: string, target: string): PrintfValidation {
   const want = extractPrintfArgs(source);
   const got = extractPrintfArgs(target);
-  const { missing, extra } = multisetDiff(want, got);
+  const { missing, extra } = isMatchingIcuPluralPair(source, target)
+    ? setDiff([...new Set(want)], [...new Set(got)])
+    : multisetDiff(want, got);
   return { ok: missing.length === 0 && extra.length === 0, missing, extra };
 }
 

@@ -39,6 +39,13 @@ describe('validatePrintfArgs', () => {
     assert.deepEqual(validateFormatArgSet(source, bad), ['extra format args: %2$s']);
   });
 
+  it('compares unique printf tokens for matching ICU plural pairs', () => {
+    const source = '{count, plural, one {# payment from %2$s} other {# payments from %2$s}}';
+    const target =
+      '{count, plural, one {# paiement de %2$s} many {# paiements de %2$s} other {# paiements de %2$s}}';
+    assert.deepEqual(validatePrintfArgs(source, target).ok, true);
+  });
+
   it('builds an explicit retry hint', () => {
     const source = '%1$s invited you.';
     const hint = formatPrintfRetryHint(source);

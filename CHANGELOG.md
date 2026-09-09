@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.6 (2026-09-09)
+
+**ICU plural printf parity** — fixes false positives when printf tokens repeat per CLDR category:
+
+- `validateFormatArgSet` compares unique token sets (not per-category multiset) for matching ICU plural pairs
+- `validatePrintfArgs` uses the same rule so translate guard accepts valid CLDR-expanded targets
+
+Companion: `i18n-agent-nest@0.1.12` tracks `i18n-agent@^0.8.6`.
+
 ## 0.8.5 (2026-09-09)
 
 **CLDR plural placeholder parity** — fixes false positives when targets have more ICU categories than English source:
