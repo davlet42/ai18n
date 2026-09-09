@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.8.0 (2026-09-09)
+
+**Android structural check** — catch KinCassa-class delivery bugs in CI before Gradle/Android Lint:
+
+- `i18n-agent check --platform android` runs alongside the existing lockfile drift gate
+- CLDR plural category coverage per target locale (`de`: one/other; `fr`/`es`/`it`: one/many/other; `ru`: one/few/many/other; `ar`: all six)
+- Format-arg parity vs source: printf (`%1$s`), simple `{name}` / `{{name}}`, and `#` inside ICU plural bodies
+- `<annotation …>` inline markup must survive verbatim in translations when present in source
+- Validators exported from the package (`runAndroidStructuralCheck`, `validateAndroidPluralPair`, …)
+
+Companion: `i18n-agent-nest@0.1.6` tracks `i18n-agent@^0.8.0`.
+
 ## 0.7.0 (2026-08-05)
 
 **Android export for client pilots** — namespaces layout no longer forces `android_nav_overview` into `R.string`:

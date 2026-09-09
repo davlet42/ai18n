@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.6 (2026-09-09)
+
+- Depend on `i18n-agent@^0.8.0` (Android structural `check --platform android`).
+
 ## 0.1.5 (2026-08-05)
 
 - Depend on `i18n-agent@^0.7.0` (Android export `namespaces` filter + `prefixNamespace`).

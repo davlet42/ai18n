@@ -52,6 +52,24 @@ Same artifacts, served from the USER'S OWN backend — no cloud of ours, ever:
 - [x] Reader: string/comment-aware balanced scan of the default export (`as const` / `satisfies` inside translated text cannot confuse it), inner assertions stripped, evaluation in an empty vm sandbox — modules must be self-contained (no imported values; template interpolation rejected with a clear error); result realm-normalized via JSON round-trip
 - [x] Writer: deterministic emitter (bare identifier keys, single-quoted strings, 2-space indent, `as const` suffix); `.d.ts` codegen neighbours are ignored when detecting namespaces
 
+## v0.8 — Android structural check · SHIPPED in 0.8.0
+
+KinCassa pilot feedback (MissingQuantity, extra `%n$s`, stripped `<annotation>`):
+
+- [x] CLDR plural category table per target locale (`de` … `ar`)
+- [x] `i18n-agent check --platform android` — validates filtered `exports[].platform: android` namespaces (or all when no filter): ICU plural completeness, printf/`{name}`/`#` parity vs source, `<annotation>` tags verbatim
+- [x] Exported validators + unit tests on KinCassa-shaped fixtures
+
+## v0.8.1 — CLDR plural expansion (post-translate) · PLANNED
+
+- [ ] `expandPluralCategories(text, targetLang)` after translate; copy `other` into missing `many`/`few`/…
+- [ ] Optional `--expand-plurals=translate` for LLM fill of new categories only
+
+## v0.8.2 — `<annotation>` mask-and-translate + export · PLANNED
+
+- [ ] Mask inline Android markup before LLM; unmask after
+- [ ] `escapeAndroidForResources` whitelist for `<annotation>` (no `&lt;` escape)
+
 ## v0.7 — Android export for client R.string pilots · SHIPPED in 0.7.0
 
 - [x] `exports[].platform: android` → `namespaces: […]` filter (skip server namespaces in `strings.xml`)

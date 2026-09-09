@@ -40,7 +40,7 @@ Locale files may be JSON, YAML, or **TypeScript modules** (`export default { …
 1. You (or your agent) edit the **source** locale as part of normal feature work.
 2. `i18n-agent translate` diffs against the lockfile and translates **only new and changed keys**, batched through the subscription agent. Placeholders (`{name}`, `{{var}}`, `%s`, ICU plurals, HTML tags) are validated after translation — a violation gets one retry, then the key is reported instead of silently broken.
 3. Run it again — zero calls. The lockfile knows.
-4. `i18n-agent check` in CI fails the build when targets drift out of sync.
+4. `i18n-agent check` in CI fails the build when targets drift out of sync. For Android pilots add `i18n-agent check --platform android` — mechanical CLDR plural coverage, format-arg parity (`%1$s` must match source), and `<annotation>` markup preservation (no AI calls).
 
 ## Manual edits are sacred
 
@@ -105,7 +105,7 @@ The guides encode the ownership rules (source is yours, targets are machine-owne
 
 ## Status
 
-**v0.6.0** — recurring `--source-only` client sync (Android/iOS source → canonical, targets untouched). Engine live-verified since 0.1; multi-platform export, self-hosted bundle, TS locales, and native import shipped through 0.5. See [ROADMAP.md](./ROADMAP.md). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate).
+**v0.8.0** — Android structural `check --platform android` (CLDR plurals, format-arg parity, annotation tags). See [ROADMAP.md](./ROADMAP.md). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate).
 
 ## Migrating an existing app / syncing a client source locale
 

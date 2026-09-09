@@ -15,7 +15,9 @@ the user's subscription via `npx i18n-agent …`. Rules:
   produced by `npx i18n-agent translate`.
 - New project: `npx i18n-agent init` → `npx i18n-agent add-locale <lang> --translate`.
 - After source-locale changes: `npx i18n-agent translate`. Before commit:
-  `npx i18n-agent check` (CI gate, exit 1 on drift).
+  `npx i18n-agent check` (CI gate, exit 1 on drift). Android pilots also run
+  `npx i18n-agent check --platform android` (CLDR plurals, format-arg parity,
+  `<annotation>` markup — no AI).
 - When English lives in an Android (or iOS) client repo and the canonical set is
   on a backend: refresh source with
   `npx i18n-agent import --platform android --in <res|values|strings.xml> --source-only`

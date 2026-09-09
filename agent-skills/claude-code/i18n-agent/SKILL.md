@@ -19,7 +19,9 @@ correctly: **you author the source locale; i18n-agent owns the targets.**
    documented `i18n-agent.context.yaml` / `i18n-agent.glossary.yaml` templates.
 3. `npx i18n-agent add-locale <lang> … --translate` — target files materialize
    fully translated; nothing is created by hand.
-4. Add `npx i18n-agent check` to CI — it exits 1 when locales drift.
+4. Add `npx i18n-agent check` to CI — it exits 1 when locales drift. Android
+   pilots also run `npx i18n-agent check --platform android` (CLDR plurals,
+   format-arg parity, `<annotation>` markup).
 5. Commit `i18n-agent.lock` together with the locale files (it is the translation
    memory; never edit it manually).
 
@@ -31,7 +33,8 @@ correctly: **you author the source locale; i18n-agent owns the targets.**
   `npx i18n-agent import --platform android --in <path> --source-only` to refresh
   only the source language (safe to re-run; targets untouched), then `translate`.
   Export targets for the client; they must not overwrite their authored `values/`.
-- Before committing: `npx i18n-agent check`.
+- Before committing: `npx i18n-agent check` (and `--platform android` when the
+  project exports Android `strings.xml`).
 - Adding a language: `npx i18n-agent add-locale <lang> --translate`.
 - A string that needs disambiguation ("Book" — verb or noun?) gets a one-line
   hint in `i18n-agent.context.yaml` — then retranslate.

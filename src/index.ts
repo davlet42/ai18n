@@ -70,5 +70,12 @@ export { emitXcstrings } from './exporters/xcstrings.js';
 export { emitTsKeys } from './exporters/simple.js';
 export { collectArgOrder, toPositional, findIcuMessage } from './exporters/transform.js';
 
+export { cldrPluralCategoriesForLocale, ANDROID_CLDR_PLURAL_CATEGORIES } from './android-plural-rules.js';
+export { extractFormatArgs, validateFormatArgSet } from './validators/placeholder-set.js';
+export { extractAnnotationTags, validateAndroidMarkup } from './validators/android-markup.js';
+export { validateAndroidPlural, validateAndroidPluralPair } from './validators/android-plural.js';
+export { runAndroidStructuralCheck, formatAndroidCheckIssues } from './validators/android-check.js';
+export type { AndroidCheckIssue, AndroidCheckKind, AndroidCheckOptions } from './validators/android-check.js';
+
 export { buildBundle, BundleReader, BUNDLE_MANIFEST } from './bundle.js';
 export type { BundleManifest, BundleManifestFile, BuildBundleResult, BundleReaderOptions, BundleFile } from './bundle.js';
