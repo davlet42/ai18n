@@ -68,4 +68,11 @@ describe('validatePlaceholders', () => {
     const good = '{count, plural, one {# файл} other {# файлов}}';
     assert.equal(validatePlaceholders(source, good).ok, true);
   });
+
+  it('accepts printf repeated per CLDR category in matching ICU plural pairs', () => {
+    const source = '{count, plural, one {# payment from %2$s} other {# payments from %2$s}}';
+    const expanded =
+      '{count, plural, zero {# دفعات من %2$s} one {# دفعة من %2$s} two {# دفعات من %2$s} few {# دفعات من %2$s} many {# دفعات من %2$s} other {# دفعات من %2$s}}';
+    assert.equal(validatePlaceholders(source, expanded).ok, true);
+  });
 });

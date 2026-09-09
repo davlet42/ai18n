@@ -1,3 +1,5 @@
+import { findIcuMessage } from './exporters/transform.js';
+
 // Placeholder guard. We do NOT mask placeholders before translation — masking
 // breaks ICU messages whose inner text must be translated. Instead we extract
 // a comparable SIGNATURE (a sorted multiset of canonical tokens) from the
@@ -153,10 +155,17 @@ export interface PlaceholderValidation {
   extra: string[]; // invented by the translation
 }
 
-export function validatePlaceholders(source: string, translated: string): PlaceholderValidation {
-  const want = extractPlaceholderSignature(source);
-  const got = extractPlaceholderSignature(translated);
+function isMatchingIcuPluralPair(source: string, translated: string): boolean {
+  const srcIcu = findIcuMessage(source);
+  const tgtIcu = findIcuMessage(translated);
+  return (
+    srcIcu?.keyword === 'plural' &&
+    tgtIcu?.keyword === 'plural' &&
+    srcIcu.variable === tgtIcu.variable
+  );
+}
 
+function multisetDiff(want: string[], got: string[]): { missing: string[]; extra: string[] } {
   const missing: string[] = [];
   const pool = [...got];
   for (const token of want) {
@@ -167,6 +176,23 @@ export function validatePlaceholders(source: string, translated: string): Placeh
       pool.splice(idx, 1);
     }
   }
+  return { missing, extra: pool };
+}
 
-  return { ok: missing.length === 0 && pool.length === 0, missing, extra: pool };
+function setDiff(want: string[], got: string[]): { missing: string[]; extra: string[] } {
+  const wantSet = new Set(want);
+  const gotSet = new Set(got);
+  return {
+    missing: [...wantSet].filter((token) => !gotSet.has(token)),
+    extra: [...gotSet].filter((token) => !wantSet.has(token)),
+  };
+}
+
+export function validatePlaceholders(source: string, translated: string): PlaceholderValidation {
+  const want = extractPlaceholderSignature(source);
+  const got = extractPlaceholderSignature(translated);
+  const { missing, extra } = isMatchingIcuPluralPair(source, translated)
+    ? setDiff(want, got)
+    : multisetDiff(want, got);
+  return { ok: missing.length === 0 && extra.length === 0, missing, extra };
 }

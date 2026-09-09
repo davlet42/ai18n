@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.7 (2026-09-09)
+
+**Translate guard ICU plural signatures** — `validatePlaceholders` compares unique token sets for matching ICU plural pairs so printf tokens repeated per CLDR category no longer fail translation.
+
+Companion: `i18n-agent-nest@0.1.13` tracks `i18n-agent@^0.8.7`.
+
 ## 0.8.6 (2026-09-09)
 
 **ICU plural printf parity** — fixes false positives when printf tokens repeat per CLDR category:
