@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.3 (2026-09-09)
+
+**Printf placeholder guard (all platforms)** — closes `MissingFormatArgumentException`-class bugs:
+
+- `extractPrintfArgs` / `validatePrintfArgs` — platform-agnostic module for Android (`%1$s`), Apple (`%@`, `%lld`), and named `%(user)s` tokens
+- `translate` guard runs printf validation on every platform; retry prompt spells the exact required tokens (e.g. do not invent `%2$s` when source has only `%1$s`)
+- `extractFormatArgs` (structural check) now composes the shared printf scanner
+
+Companion: `i18n-agent-nest@0.1.9` tracks `i18n-agent@^0.8.3`.
+
 ## 0.8.2 (2026-09-09)
 
 **Android `<annotation>` markup** — clickable Terms/Privacy spans survive translate + export:

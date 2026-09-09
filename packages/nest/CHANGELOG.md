@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.9 (2026-09-09)
+
+- Depend on `i18n-agent@^0.8.3` (platform-agnostic printf placeholder guard).
+
 ## 0.1.8 (2026-09-09)
 
 - Depend on `i18n-agent@^0.8.2` (Android `<annotation>` mask-and-translate + export).

@@ -105,7 +105,7 @@ The guides encode the ownership rules (source is yours, targets are machine-owne
 
 ## Status
 
-**v0.8.2** — Android `<annotation>` markup preserved through translate + export; CLDR plural expansion; structural `check --platform android`. See [ROADMAP.md](./ROADMAP.md). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate).
+**v0.8.3** — platform-agnostic printf guard (`%1$s`, `%@`, …) in translate + check; Android `<annotation>` markup; CLDR plural expansion. See [ROADMAP.md](./ROADMAP.md). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate).
 
 ## Migrating an existing app / syncing a client source locale
 

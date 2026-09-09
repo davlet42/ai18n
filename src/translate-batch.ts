@@ -6,6 +6,7 @@ import {
   validateAndroidMarkup,
 } from './android-markup.js';
 import { cldrPluralCategoriesForLocale } from './android-plural-rules.js';
+import { formatPrintfRetryHint, validatePrintfArgs } from './printf-args.js';
 import { validatePlaceholders } from './placeholders.js';
 
 // Batch translation of UI strings through an injectable transport. The default
@@ -68,7 +69,8 @@ export function buildSystemPrompt(options: TranslateBatchOptions): string {
 
 Rules:
 - Respond with ONLY a JSON object mapping every input id to its translation. No commentary, no code fences.
-- Preserve EVERY placeholder exactly as in the source: {var}, {{var}}, printf (%s, %1$s, %(name)s), $t(...) references, HTML tags such as <b>, </b>, <0>, <br/>.
+- Preserve EVERY placeholder exactly as in the source: {var}, {{var}}, printf (%s, %1$s, %(name)s, %@), $t(...) references, HTML tags such as <b>, </b>, <0>, <br/>.
+- Printf positional indices are fixed: if the source has %1$s only, the translation must also have %1$s only — never substitute %2$s for translated static text.
 - Android <annotation> tags: keep every <annotation ...> and </annotation> tag and its attributes verbatim; translate only the human text between those tags (⟦n⟧ markers, when present, mark translatable spans inside annotations).
 - ICU messages ({var, plural, ...} / {var, select, ...}): keep the variable, keyword and category names untouched; translate only the human text inside category bodies; keep every # as is.${pluralHint}
 - Translations must sound natural and terse, appropriate for UI labels, buttons and messages.
@@ -120,15 +122,26 @@ function parseJsonObject(raw: string): Record<string, unknown> | null {
   return null;
 }
 
-function validateTranslatedString(source: string, translated: string): { ok: boolean; issues: string[] } {
+function validateTranslatedString(
+  source: string,
+  translated: string,
+): { ok: boolean; issues: string[]; retryHint?: string } {
   const placeholder = validatePlaceholders(source, translated);
+  const printf = validatePrintfArgs(source, translated);
   const markup = validateAndroidMarkup(source, translated);
   const issues = [
     ...placeholder.missing.map((token) => `missing ${token}`),
     ...placeholder.extra.map((token) => `extra ${token}`),
+    ...printf.missing.map((token) => `missing printf ${token}`),
+    ...printf.extra.map((token) => `extra printf ${token}`),
     ...markup,
   ];
-  return { ok: placeholder.ok && markup.length === 0, issues };
+  const retryHint = formatPrintfRetryHint(source);
+  return {
+    ok: placeholder.ok && printf.ok && markup.length === 0,
+    issues,
+    retryHint,
+  };
 }
 
 function maskItemForTranslation(item: BatchItem): { item: BatchItem; source: string } {
@@ -229,9 +242,10 @@ export async function translateBatch(
       if (check.ok) {
         result.translations.set(item.id, translated);
       } else {
+        const hint = check.retryHint ? ` ${check.retryHint}` : '';
         violations.push({
           ...item,
-          context: `${item.context ? `${item.context}. ` : ''}VALIDATION ERROR in your previous attempt — fix: ${check.issues.join('; ')}`,
+          context: `${item.context ? `${item.context}. ` : ''}VALIDATION ERROR in your previous attempt — fix: ${check.issues.join('; ')}.${hint}`,
         });
       }
     }

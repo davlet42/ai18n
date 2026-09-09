@@ -76,6 +76,12 @@ export {
   normalizePluralCategoryName,
 } from './android-plural-rules.js';
 export { expandPluralCategories, expandPluralCategoriesIfNeeded } from './plural-expand.js';
+export {
+  extractPrintfArgs,
+  validatePrintfArgs,
+  formatPrintfRetryHint,
+} from './printf-args.js';
+export type { PrintfValidation } from './printf-args.js';
 export { extractFormatArgs, validateFormatArgSet } from './validators/placeholder-set.js';
 export {
   extractAnnotationTags,

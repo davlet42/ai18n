@@ -71,6 +71,12 @@ KinCassa pilot feedback (MissingQuantity, extra `%n$s`, stripped `<annotation>`)
 - [x] Mask inline Android `<annotation>` inner text with `⟦n⟧` markers before LLM; validate tags + attributes after
 - [x] `escapeAndroidForResources` whitelist for `<annotation>` / `</annotation>` (no `&lt;` escape in export)
 
+## v0.8.3 — Printf placeholder guard hardening · SHIPPED in 0.8.3
+
+- [x] `extractPrintfArgs` / `validatePrintfArgs` — platform-agnostic (Android, Apple xcstrings, named printf)
+- [x] Translate guard + explicit retry hint on all platforms; structural `check` composes shared scanner
+- [x] KinCassa `auth_invited_subtitle` fixture: extra `%2$s` fails check and translate
+
 ## v0.7 — Android export for client R.string pilots · SHIPPED in 0.7.0
 
 - [x] `exports[].platform: android` → `namespaces: […]` filter (skip server namespaces in `strings.xml`)
