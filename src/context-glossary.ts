@@ -47,7 +47,7 @@ export function loadContextMap(path: string, layoutKind: 'flat' | 'namespaces'):
 
 // i18n-agent.glossary.yaml — terms the translator must respect:
 //   terms:
-//     - Poieton              # bare term: keep untranslated
+//     - ExampleBrand         # bare term: keep untranslated
 //     - "Wallet = Кошелёк"   # pin an exact translation
 // A plain YAML list (without the `terms:` wrapper) is accepted too.
 export function loadGlossaryTerms(path: string): string[] {

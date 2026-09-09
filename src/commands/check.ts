@@ -22,8 +22,9 @@ function parseCheckArgs(args: string[]): CheckOptions {
 // translations whose source changed (review). `adopt` (recording pre-existing
 // values into the lock) is not drift: the content on disk is already right.
 //
-// With `--platform android`, also validates target strings against Android
-// structural rules (CLDR plural categories, format-arg parity, annotation tags).
+// With `--platform android`, also validates target strings against structural
+// rules for Android exports: CLDR plural categories and format-arg parity (all
+// platforms) plus Android `<annotation>` markup when present in source.
 export function runCheck(cwd: string, args: string[] = []): number {
   const options = parseCheckArgs(args);
   const config = loadConfig(cwd);

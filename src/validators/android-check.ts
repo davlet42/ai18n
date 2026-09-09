@@ -8,7 +8,7 @@ import {
   type Leaf,
 } from '../locale-files.js';
 import { validateAndroidMarkup } from './android-markup.js';
-import { validateAndroidPluralPair } from './android-plural.js';
+import { validateCldrPluralPair } from './cldr-plural.js';
 import { validateFormatArgSet } from './placeholder-set.js';
 
 export type AndroidCheckKind = 'plural' | 'placeholder' | 'markup';
@@ -74,7 +74,7 @@ export function runAndroidStructuralCheck(
           continue;
         }
 
-        for (const message of validateAndroidPluralPair(sourceValue, targetValue, lang)) {
+        for (const message of validateCldrPluralPair(sourceValue, targetValue, lang)) {
           issues.push({ lang, namespace: ns, key, kind: 'plural', message });
         }
         for (const message of validateFormatArgSet(sourceValue, targetValue)) {

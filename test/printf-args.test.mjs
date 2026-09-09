@@ -27,10 +27,10 @@ describe('extractPrintfArgs', () => {
 });
 
 describe('validatePrintfArgs', () => {
-  it('detects extra positional indices (auth_invited_subtitle)', () => {
-    const source = '%1$s invited you to join their AI Family Treasury and Payment Hub on KinCassa.';
-    const bad = '%1$s пригласил вас присоединиться к %2$s на KinCassa.';
-    const good = '%1$s пригласил вас присоединиться к AI Family Treasury and Payment Hub на KinCassa.';
+  it('detects extra positional indices', () => {
+    const source = '%1$s invited you to join their team on ExampleApp.';
+    const bad = '%1$s пригласил вас присоединиться к %2$s в ExampleApp.';
+    const good = '%1$s пригласил вас присоединиться к команде в ExampleApp.';
 
     const badCheck = validatePrintfArgs(source, bad);
     assert.equal(badCheck.ok, false);

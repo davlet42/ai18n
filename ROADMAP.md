@@ -52,13 +52,11 @@ Same artifacts, served from the USER'S OWN backend — no cloud of ours, ever:
 - [x] Reader: string/comment-aware balanced scan of the default export (`as const` / `satisfies` inside translated text cannot confuse it), inner assertions stripped, evaluation in an empty vm sandbox — modules must be self-contained (no imported values; template interpolation rejected with a clear error); result realm-normalized via JSON round-trip
 - [x] Writer: deterministic emitter (bare identifier keys, single-quoted strings, 2-space indent, `as const` suffix); `.d.ts` codegen neighbours are ignored when detecting namespaces
 
-## v0.8 — Android structural check · SHIPPED in 0.8.0
+## v0.8 — Structural check + translate hardening · SHIPPED in 0.8.0–0.8.4
 
-KinCassa pilot feedback (MissingQuantity, extra `%n$s`, stripped `<annotation>`):
-
-- [x] CLDR plural category table per target locale (`de` … `ar`)
+- [x] CLDR plural category table per target locale (`de` … `ar`) — shared across translate, check, and export
 - [x] `i18n-agent check --platform android` — validates filtered `exports[].platform: android` namespaces (or all when no filter): ICU plural completeness, printf/`{name}`/`#` parity vs source, `<annotation>` tags verbatim
-- [x] Exported validators + unit tests on KinCassa-shaped fixtures
+- [x] Exported validators + unit tests on representative fixtures
 
 ## v0.8.1 — CLDR plural expansion (post-translate) · SHIPPED in 0.8.1
 
@@ -75,9 +73,15 @@ KinCassa pilot feedback (MissingQuantity, extra `%n$s`, stripped `<annotation>`)
 
 - [x] `extractPrintfArgs` / `validatePrintfArgs` — platform-agnostic (Android, Apple xcstrings, named printf)
 - [x] Translate guard + explicit retry hint on all platforms; structural `check` composes shared scanner
-- [x] KinCassa `auth_invited_subtitle` fixture: extra `%2$s` fails check and translate
+- [x] Extra `%2$s` when source has only `%1$s` fails check and translate
 
-## v0.7 — Android export for client R.string pilots · SHIPPED in 0.7.0
+## v0.8.4 — Polish & release · SHIPPED in 0.8.4
+
+- [x] `cldr-plural-rules` / `validateCldrPlural*` — universal CLDR layer (Android names kept as aliases)
+- [x] `i18n-agent status --platform android` — per-language structural error summary
+- [x] Docs and tests use generic fixtures only
+
+## v0.7 — Android export for R.string workflows · SHIPPED in 0.7.0
 
 - [x] `exports[].platform: android` → `namespaces: […]` filter (skip server namespaces in `strings.xml`)
 - [x] `prefixNamespace: false` → bare resource names matching Android `R.string.*` (default still prefixes `<ns>_`)

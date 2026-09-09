@@ -18,7 +18,7 @@ Usage:
   i18n-agent init [--locales <dir>] [--source <lang>]     detect layout, write config + templates
   i18n-agent translate [--dry-run] [--review] [--retranslate-stale] [--lang <l>]…
   i18n-agent check [--platform android]                   CI gate: lockfile drift; optional Android structural rules
-  i18n-agent status                                       per-language sync overview
+  i18n-agent status [--platform android]                  per-language sync overview; optional structural summary
   i18n-agent add-locale <lang> [<lang>…] [--translate]    add target languages
   i18n-agent report [--days 7] [--all]                    volumes, spend receipts, DeepL-API equivalent
   i18n-agent export [--platform <p>]                 native files: android · ios-xcstrings · web-json · ts-keys
@@ -52,7 +52,7 @@ async function main(): Promise<void> {
       process.exitCode = runCheck(cwd, args.slice(1));
       return;
     case 'status':
-      process.exitCode = runStatus(cwd);
+      process.exitCode = runStatus(cwd, args.slice(1));
       return;
     case 'add-locale':
       process.exitCode = await runAddLocale(cwd, args.slice(1));

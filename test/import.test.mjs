@@ -21,7 +21,7 @@ describe('parseAndroidStringsXml', () => {
     <string name="greet">Hello %1$s &amp; welcome</string>
     <string name="quoted">"  spaced  "</string>
     <string name="escaped">don\\'t stop\\nnow</string>
-    <string name="brand" translatable="false">kincassa</string>
+    <string name="brand" translatable="false">demo-app</string>
     <plurals name="files_count">
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>

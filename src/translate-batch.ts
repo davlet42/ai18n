@@ -5,7 +5,7 @@ import {
   unmaskAndroidMarkup,
   validateAndroidMarkup,
 } from './android-markup.js';
-import { cldrPluralCategoriesForLocale } from './android-plural-rules.js';
+import { cldrPluralCategoriesForLocale } from './cldr-plural-rules.js';
 import { formatPrintfRetryHint, validatePrintfArgs } from './printf-args.js';
 import { validatePlaceholders } from './placeholders.js';
 

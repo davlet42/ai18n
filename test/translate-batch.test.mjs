@@ -72,29 +72,27 @@ describe('translateBatch', () => {
     assert.deepEqual(result.failed, []);
   });
 
-  it('extra printf index → retry spells required tokens → fixed (auth_invited_subtitle)', async () => {
-    const source =
-      '%1$s invited you to join their AI Family Treasury and Payment Hub on KinCassa.';
+  it('extra printf index → retry spells required tokens → fixed', async () => {
+    const source = '%1$s invited you to join their team on ExampleApp.';
     let n = 0;
     const transport = async ({ user }) => {
       n += 1;
       if (n === 1) {
         return JSON.stringify({
-          'auth:invited': '%1$s пригласил вас присоединиться к %2$s на KinCassa.',
+          'auth:invited': '%1$s пригласил вас присоединиться к %2$s в ExampleApp.',
         });
       }
       assert.ok(user.includes('VALIDATION ERROR'), 'corrective context attached');
       assert.ok(user.includes('%1$s'), 'required printf token spelled out');
       assert.ok(user.includes('do not add %2$s'), 'printf retry hint attached');
       return JSON.stringify({
-        'auth:invited':
-          '%1$s пригласил вас присоединиться к AI Family Treasury and Payment Hub на KinCassa.',
+        'auth:invited': '%1$s пригласил вас присоединиться к команде в ExampleApp.',
       });
     };
     const result = await translateBatch(items(['auth:invited', source]), { ...OPTS, transport });
     assert.equal(
       result.translations.get('auth:invited'),
-      '%1$s пригласил вас присоединиться к AI Family Treasury and Payment Hub на KinCassa.',
+      '%1$s пригласил вас присоединиться к команде в ExampleApp.',
     );
     assert.deepEqual(result.failed, []);
   });
@@ -129,9 +127,9 @@ describe('translateBatch', () => {
     await translateBatch(items(['a:k', 'OK']), {
       ...OPTS,
       transport,
-      glossaryTerms: ['Poieton', 'Кошелёк = Wallet'],
+      glossaryTerms: ['ExampleBrand', 'Кошелёк = Wallet'],
     });
-    assert.ok(sys.includes('Poieton'));
+    assert.ok(sys.includes('ExampleBrand'));
     assert.ok(sys.includes('Кошелёк = Wallet'));
   });
 });

@@ -20,7 +20,7 @@ describe('android plural rules', () => {
     assert.deepEqual(cldrPluralCategoriesForLocale('ja'), ['one', 'other']);
   });
 
-  it('flags missing categories on KinCassa-style plurals', () => {
+  it('flags missing CLDR plural categories', () => {
     const en = '{count, plural, one {# document} other {# documents}}';
     const frBad = '{count, plural, one {# document} other {# documents}}';
     const frGood = '{count, plural, one {# document} many {# documents} other {# documents}}';
@@ -47,10 +47,10 @@ describe('android plural rules', () => {
 });
 
 describe('format arg parity', () => {
-  it('detects extra printf placeholders (auth_invited_subtitle)', () => {
-    const source = '%1$s invited you to join their AI Family Treasury and Payment Hub on KinCassa.';
-    const bad = '%1$s пригласил вас присоединиться к %2$s на KinCassa.';
-    const good = '%1$s пригласил вас присоединиться к AI Family Treasury and Payment Hub на KinCassa.';
+  it('detects extra printf placeholders', () => {
+    const source = '%1$s invited you to join their team on ExampleApp.';
+    const bad = '%1$s пригласил вас присоединиться к %2$s в ExampleApp.';
+    const good = '%1$s пригласил вас присоединиться к команде в ExampleApp.';
 
     assert.deepEqual(validateFormatArgSet(source, bad), ['extra format args: %2$s']);
     assert.deepEqual(validateFormatArgSet(source, good), []);

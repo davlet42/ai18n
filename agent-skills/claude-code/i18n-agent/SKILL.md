@@ -20,8 +20,9 @@ correctly: **you author the source locale; i18n-agent owns the targets.**
 3. `npx i18n-agent add-locale <lang> … --translate` — target files materialize
    fully translated; nothing is created by hand.
 4. Add `npx i18n-agent check` to CI — it exits 1 when locales drift. Android
-   pilots also run `npx i18n-agent check --platform android` (CLDR plurals,
-   format-arg parity, `<annotation>` markup).
+   exports also run `npx i18n-agent check --platform android` (CLDR plurals,
+   format-arg parity, `<annotation>` markup). `status --platform android` prints
+   a per-language structural summary.
 5. Commit `i18n-agent.lock` together with the locale files (it is the translation
    memory; never edit it manually).
 

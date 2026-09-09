@@ -1,4 +1,4 @@
-import { cldrPluralCategoriesForLocale, normalizePluralCategoryName } from './android-plural-rules.js';
+import { cldrPluralCategoriesForLocale, normalizePluralCategoryName } from './cldr-plural-rules.js';
 import { findIcuMessage } from './exporters/transform.js';
 
 function categoryMap(icu: NonNullable<ReturnType<typeof findIcuMessage>>): Map<string, string> {

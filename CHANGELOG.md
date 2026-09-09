@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.4 (2026-09-09)
+
+**Cross-platform polish** — universal CLDR/printf layers and operator tooling:
+
+- `cldr-plural-rules.ts` + `validateCldrPlural*` — CLDR plural logic shared by translate expansion, structural check, and export (legacy `android-plural-*` names remain as aliases)
+- `i18n-agent status --platform android` — per-language summary of structural issues (plural / placeholder / markup)
+- Tests and docs use generic fixtures only
+
+Companion: `i18n-agent-nest@0.1.10` tracks `i18n-agent@^0.8.4`.
+
 ## 0.8.3 (2026-09-09)
 
 **Printf placeholder guard (all platforms)** — closes `MissingFormatArgumentException`-class bugs:
@@ -22,7 +32,7 @@ Companion: `i18n-agent-nest@0.1.8` tracks `i18n-agent@^0.8.2`.
 
 ## 0.8.1 (2026-09-09)
 
-**CLDR plural expansion** — target locales get every Android-required quantity without hand-editing:
+**CLDR plural expansion** — target locales get every CLDR-required quantity without hand-editing:
 
 - `expandPluralCategories` / `expandPluralCategoriesIfNeeded` copy the `other` form (fallback: `one`) into missing `many` / `few` / `zero` / `two` per locale
 - `translate` applies expansion after the agent for new/changed machine strings; machine-owned `keep` rows are expanded on the next run
@@ -32,7 +42,7 @@ Companion: `i18n-agent-nest@0.1.7` tracks `i18n-agent@^0.8.1`.
 
 ## 0.8.0 (2026-09-09)
 
-**Android structural check** — catch KinCassa-class delivery bugs in CI before Gradle/Android Lint:
+**Android structural check** — catch delivery bugs in CI before Gradle/Android Lint:
 
 - `i18n-agent check --platform android` runs alongside the existing lockfile drift gate
 - CLDR plural category coverage per target locale (`de`: one/other; `fr`/`es`/`it`: one/many/other; `ru`: one/few/many/other; `ar`: all six)
@@ -44,7 +54,7 @@ Companion: `i18n-agent-nest@0.1.6` tracks `i18n-agent@^0.8.0`.
 
 ## 0.7.0 (2026-08-05)
 
-**Android export for client pilots** — namespaces layout no longer forces `android_nav_overview` into `R.string`:
+**Android export** — namespaces layout no longer forces `android_nav_overview` into `R.string`:
 
 - `exports[].platform: android` options:
   - `namespaces: [android]` (or singular `namespace: android`) — emit only those locale namespaces into `values-<lang>/strings.xml` (server `auth`/`email`/… stay out)

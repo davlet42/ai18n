@@ -72,9 +72,16 @@ export { collectArgOrder, toPositional, findIcuMessage } from './exporters/trans
 
 export {
   cldrPluralCategoriesForLocale,
+  CLDR_PLURAL_CATEGORIES_BY_LOCALE,
   ANDROID_CLDR_PLURAL_CATEGORIES,
   normalizePluralCategoryName,
-} from './android-plural-rules.js';
+} from './cldr-plural-rules.js';
+export { validateCldrPlural, validateCldrPluralPair } from './validators/cldr-plural.js';
+export {
+  summarizeStructuralIssuesByLang,
+  formatStructuralSummaryLine,
+} from './validators/structural-summary.js';
+export type { StructuralIssueSummary } from './validators/structural-summary.js';
 export { expandPluralCategories, expandPluralCategoriesIfNeeded } from './plural-expand.js';
 export {
   extractPrintfArgs,

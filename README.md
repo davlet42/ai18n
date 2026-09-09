@@ -40,7 +40,7 @@ Locale files may be JSON, YAML, or **TypeScript modules** (`export default { …
 1. You (or your agent) edit the **source** locale as part of normal feature work.
 2. `i18n-agent translate` diffs against the lockfile and translates **only new and changed keys**, batched through the subscription agent. Placeholders (`{name}`, `{{var}}`, `%s`, ICU plurals, HTML tags) are validated after translation — a violation gets one retry, then the key is reported instead of silently broken.
 3. Run it again — zero calls. The lockfile knows.
-4. `i18n-agent check` in CI fails the build when targets drift out of sync. For Android pilots add `i18n-agent check --platform android` — mechanical CLDR plural coverage, format-arg parity (`%1$s` must match source), and `<annotation>` markup preservation (no AI calls).
+4. `i18n-agent check` in CI fails the build when targets drift out of sync. For Android exports add `i18n-agent check --platform android` — CLDR plural coverage, format-arg parity (`%1$s` must match source), and `<annotation>` markup preservation (no AI calls). `i18n-agent status --platform android` prints a per-language structural summary.
 
 ## Manual edits are sacred
 
@@ -105,7 +105,7 @@ The guides encode the ownership rules (source is yours, targets are machine-owne
 
 ## Status
 
-**v0.8.3** — platform-agnostic printf guard (`%1$s`, `%@`, …) in translate + check; Android `<annotation>` markup; CLDR plural expansion. See [ROADMAP.md](./ROADMAP.md). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate).
+**v0.8.4** — universal CLDR plural + printf guards; `status --platform android`; Android `<annotation>` markup. See [ROADMAP.md](./ROADMAP.md). Built on [`@cursor-translate/core`](https://github.com/davlet42/cursor-translate).
 
 ## Migrating an existing app / syncing a client source locale
 
