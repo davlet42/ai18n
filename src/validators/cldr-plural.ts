@@ -1,5 +1,6 @@
 import { cldrPluralCategoriesForLocale, normalizePluralCategoryName } from '../cldr-plural-rules.js';
 import { findIcuMessage } from '../exporters/transform.js';
+import { validateDuplicatePluralCategories } from './cldr-plural-duplicate.js';
 
 export function validateCldrPlural(text: string, lang: string): string[] {
   const icu = findIcuMessage(text);
@@ -27,5 +28,5 @@ export function validateCldrPluralPair(source: string, target: string, lang: str
     return ['target is missing ICU plural block'];
   }
 
-  return validateCldrPlural(target, lang);
+  return [...validateCldrPlural(target, lang), ...validateDuplicatePluralCategories(target, lang)];
 }

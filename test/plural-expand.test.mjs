@@ -4,7 +4,7 @@ import { describe, it } from 'node:test';
 const {
   expandPluralCategories,
   expandPluralCategoriesIfNeeded,
-  validateAndroidPluralPair,
+  validateCldrPlural,
   buildSystemPrompt,
 } = await import('../dist/index.js');
 
@@ -15,7 +15,7 @@ describe('expandPluralCategories', () => {
     const frIn = '{count, plural, one {# document} other {# documents}}';
     const frOut = expandPluralCategories(frIn, 'fr');
     assert.ok(frOut.includes('many {# documents}'));
-    assert.deepEqual(validateAndroidPluralPair(en, frOut, 'fr'), []);
+    assert.deepEqual(validateCldrPlural(frOut, 'fr'), []);
   });
 
   it('adds few and many for ru from other', () => {
@@ -23,7 +23,7 @@ describe('expandPluralCategories', () => {
     const ruOut = expandPluralCategories(ruIn, 'ru');
     assert.ok(ruOut.includes('few {# документов}'));
     assert.ok(ruOut.includes('many {# документов}'));
-    assert.deepEqual(validateAndroidPluralPair(en, ruOut, 'ru'), []);
+    assert.deepEqual(validateCldrPlural(ruOut, 'ru'), []);
   });
 
   it('adds all six categories for ar', () => {
@@ -32,7 +32,7 @@ describe('expandPluralCategories', () => {
     for (const qty of ['zero', 'one', 'two', 'few', 'many', 'other']) {
       assert.ok(arOut.includes(`${qty} {`), `missing ${qty}`);
     }
-    assert.deepEqual(validateAndroidPluralPair(en, arOut, 'ar'), []);
+    assert.deepEqual(validateCldrPlural(arOut, 'ar'), []);
   });
 
   it('is a no-op when categories are already complete', () => {

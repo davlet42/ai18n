@@ -77,6 +77,7 @@ export {
   normalizePluralCategoryName,
 } from './cldr-plural-rules.js';
 export { validateCldrPlural, validateCldrPluralPair } from './validators/cldr-plural.js';
+export { validateDuplicatePluralCategories } from './validators/cldr-plural-duplicate.js';
 export {
   summarizeStructuralIssuesByLang,
   formatStructuralSummaryLine,

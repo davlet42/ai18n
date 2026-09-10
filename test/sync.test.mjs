@@ -159,6 +159,35 @@ describe('sync end-to-end (fake transport)', () => {
       '[t] Bye',
     );
   });
+
+  it('--retranslate-glossary retranslates human-owned keys that match glossary terms', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'i18n-agent-glossary-'));
+    mkdirSync(join(root, 'locales', 'en'), { recursive: true });
+    mkdirSync(join(root, 'locales', 'ru'), { recursive: true });
+    writeFileSync(join(root, 'locales', 'en', 'common.json'), JSON.stringify({ nav: 'PayList' }, null, 2));
+    writeFileSync(join(root, 'locales', 'ru', 'common.json'), JSON.stringify({ nav: 'Старый' }, null, 2));
+    writeFileSync(join(root, 'i18n-agent.config.yaml'), 'source: en\ntargets: [ru]\nlocales: locales\n');
+    writeFileSync(join(root, 'i18n-agent.glossary.yaml'), 'terms:\n  - PayList\n');
+
+    const config = loadConfig(root);
+    const transport = async (call) => {
+      const payload = JSON.parse(call.user.slice(call.user.indexOf('[')));
+      return JSON.stringify(Object.fromEntries(payload.map((i) => [i.id, 'PayList'])));
+    };
+
+    await applySync(config, computeSync(config), { transport });
+    const lockPath = join(root, 'i18n-agent.lock');
+    const lock = JSON.parse(readFileSync(lockPath, 'utf8'));
+    lock.keys['common:nav'].targets.ru.by = 'human';
+    writeFileSync(lockPath, JSON.stringify(lock, null, 2) + '\n');
+
+    const result = await applySync(config, computeSync(loadConfig(root)), {
+      transport,
+      retranslateGlossary: true,
+    });
+    assert.equal(result.translated, 1);
+    assert.equal(JSON.parse(readFileSync(join(root, 'locales', 'ru', 'common.json'), 'utf8')).nav, 'PayList');
+  });
 });
 
 describe('init + check commands', () => {

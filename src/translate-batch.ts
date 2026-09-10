@@ -7,7 +7,10 @@ import {
 } from './android-markup.js';
 import { cldrPluralCategoriesForLocale } from './cldr-plural-rules.js';
 import { formatPrintfRetryHint, validatePrintfArgs } from './printf-args.js';
+import { findIcuMessage } from './exporters/transform.js';
 import { validatePlaceholders } from './placeholders.js';
+import { validateCldrPlural } from './validators/cldr-plural.js';
+import { validateDuplicatePluralCategories } from './validators/cldr-plural-duplicate.js';
 
 // Batch translation of UI strings through an injectable transport. The default
 // transport is the subscription agent (`claude -p`, cheap tier) via
@@ -63,7 +66,7 @@ export function buildSystemPrompt(options: TranslateBatchOptions): string {
       : '';
   const pluralHint =
     options.targetLang.length > 0
-      ? ` For ICU plural messages in ${options.targetLang}, include every required category: ${cldrPluralCategoriesForLocale(options.targetLang).join(', ')} (copy the "other" text when unsure).`
+      ? ` For ICU plural messages in ${options.targetLang}, include every required category: ${cldrPluralCategoriesForLocale(options.targetLang).join(', ')}. Each category body must use the correct grammar for that count range — never copy one category's text into another.`
       : '';
   return `You translate user-interface strings from ${options.sourceLang} to ${options.targetLang}.
 
@@ -125,11 +128,16 @@ function parseJsonObject(raw: string): Record<string, unknown> | null {
 function validateTranslatedString(
   source: string,
   translated: string,
+  targetLang: string,
 ): { ok: boolean; issues: string[]; retryHint?: string } {
   const placeholder = validatePlaceholders(source, translated);
   const printf = validatePrintfArgs(source, translated);
   const markup = validateAndroidMarkup(source, translated);
   const maskMarkers = validateAnnotationMaskMarkers(translated);
+  const plural =
+    findIcuMessage(source)?.keyword === 'plural'
+      ? [...validateCldrPlural(translated, targetLang), ...validateDuplicatePluralCategories(translated, targetLang)]
+      : [];
   const issues = [
     ...placeholder.missing.map((token) => `missing ${token}`),
     ...placeholder.extra.map((token) => `extra ${token}`),
@@ -137,6 +145,7 @@ function validateTranslatedString(
     ...printf.extra.map((token) => `extra printf ${token}`),
     ...markup,
     ...maskMarkers,
+    ...plural,
   ];
   const retryHint = formatPrintfRetryHint(source);
   return {
@@ -240,7 +249,7 @@ export async function translateBatch(
         continue;
       }
       const translated = raw;
-      const check = validateTranslatedString(source, translated);
+      const check = validateTranslatedString(source, translated, options.targetLang);
       if (check.ok) {
         result.translations.set(item.id, translated);
       } else {
@@ -264,7 +273,7 @@ export async function translateBatch(
         const source = sourceById.get(item.id) ?? item.text;
         if (typeof raw === 'string' && raw.trim() !== '') {
           const translated = raw;
-          if (validateTranslatedString(source, translated).ok) {
+          if (validateTranslatedString(source, translated, options.targetLang).ok) {
             result.translations.set(item.id, translated);
             continue;
           }

@@ -33,7 +33,7 @@ export function applyGlossaryInvalidation(
         continue;
       }
       for (const target of Object.values(entry.targets)) {
-        if (target.by === 'machine') {
+        if (options.force || target.by === 'machine') {
           target.source = GLOSSARY_INVALIDATED_SOURCE;
         }
       }

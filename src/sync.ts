@@ -23,7 +23,6 @@ import {
 } from './lockfile.js';
 import { appendRunMetrics } from './metrics.js';
 import { countPlan, planNamespace, type NamespacePlan, type PlanCounts } from './planner.js';
-import { expandPluralCategoriesIfNeeded } from './plural-expand.js';
 import { applyGlossaryInvalidation } from './glossary-invalidation.js';
 import { sourceMatchesGlossary } from './glossary-match.js';
 import { translateBatch, type BatchItem, type BatchTransport } from './translate-batch.js';
@@ -190,12 +189,7 @@ export async function applySync(
           typeof action.value === 'string'
         ) {
           const sourceText = state.sourceFlat.get(plan.namespace)?.get(action.key);
-          const locked = state.lock.keys[id]?.targets[lang];
-          if (
-            typeof sourceText === 'string' &&
-            locked?.by === 'machine' &&
-            sourceMatchesGlossary(sourceText, glossaryTerms)
-          ) {
+          if (typeof sourceText === 'string' && sourceMatchesGlossary(sourceText, glossaryTerms)) {
             wants = true;
           }
         }
@@ -267,9 +261,8 @@ export async function applySync(
           if (typeof sourceText !== 'string') {
             return value;
           }
-          const expanded = expandPluralCategoriesIfNeeded(sourceText, value, lang);
-          recordTranslation(state.lock, id, lang, sourceText, expanded);
-          return expanded;
+          recordTranslation(state.lock, id, lang, sourceText, value);
+          return value;
         };
         switch (action.type) {
           case 'keep': {

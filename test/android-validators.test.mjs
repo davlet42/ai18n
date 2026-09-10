@@ -5,6 +5,7 @@ const {
   cldrPluralCategoriesForLocale,
   validateAndroidPlural,
   validateAndroidPluralPair,
+  validateDuplicatePluralCategories,
   validateFormatArgSet,
   validateAndroidMarkup,
   extractFormatArgs,
@@ -43,6 +44,22 @@ describe('android plural rules', () => {
     assert.deepEqual(validateAndroidPluralPair(en, 'plain text', 'ru'), [
       'target is missing ICU plural block',
     ]);
+  });
+
+  it('flags duplicate few/many bodies when count placeholders are present', () => {
+    const en = '{count, plural, one {# payment} other {# payments}}';
+    const ruBad =
+      '{count, plural, one {# платеж} few {# запросов} many {# запросов} other {# запросов}}';
+    const ruGood =
+      '{count, plural, one {# запрос} few {# запроса} many {# запросов} other {# запросов}}';
+    const ruNoCount =
+      '{count, plural, one {На проверке} few {На проверке} many {На проверке} other {На проверке}}';
+
+    assert.ok(
+      validateAndroidPluralPair(en, ruBad, 'ru').some((message) => message.includes('duplicate plural')),
+    );
+    assert.deepEqual(validateAndroidPluralPair(en, ruGood, 'ru'), []);
+    assert.deepEqual(validateDuplicatePluralCategories(ruNoCount, 'ru'), []);
   });
 });
 

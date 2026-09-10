@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.1 (2026-09-10)
+
+**Glossary + plural category quality (feedback round 3)**
+
+- `--retranslate-glossary` now retranslates human-owned keys too when English source matches glossary terms
+- `check --platform android` flags duplicate ICU plural bodies (`few`/`many` in ru, `two`/`few`/`many` in ar) when count placeholders are present
+- Translate guard validates CLDR plural completeness and duplicate categories; prompt no longer suggests copying `other` into every category
+- Sync no longer post-expands machine translations by copying plural categories
+
+Companion: `i18n-agent-nest@0.1.15` tracks `i18n-agent@^0.9.1`.
+
 ## 0.9.0 (2026-09-10)
 
 **Feedback-driven hardening + Cursor translate provider**
