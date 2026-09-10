@@ -30,6 +30,15 @@ describe('transform: argument order and positionalization', () => {
     assert.deepEqual(collectArgOrder('# files from {user}', true), ['#', '{user}']);
   });
 
+  it('collects printf tokens inside ICU plural bodies', () => {
+    const source =
+      '{count, plural, one {%1$s added # payment} other {%1$s added # payments}}';
+    assert.deepEqual(collectArgOrder(source, true), ['%1$s', '#']);
+    const multi =
+      '{count, plural, one {%1$d of %2$d payment request ready to pay} other {%1$d of %2$d payment requests ready to pay}}';
+    assert.deepEqual(collectArgOrder(multi, true), ['%1$d', '%2$d']);
+  });
+
   it('finds a single top-level ICU block with surrounding text', () => {
     const icu = findIcuMessage('You have {count, plural, one {# file} other {# files}} today');
     assert.equal(icu.variable, 'count');

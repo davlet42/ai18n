@@ -2,8 +2,8 @@ import { translateTextClaudeCli } from '@cursor-translate/core';
 import {
   hasAndroidAnnotationMarkup,
   maskAndroidMarkup,
-  unmaskAndroidMarkup,
   validateAndroidMarkup,
+  validateAnnotationMaskMarkers,
 } from './android-markup.js';
 import { cldrPluralCategoriesForLocale } from './cldr-plural-rules.js';
 import { formatPrintfRetryHint, validatePrintfArgs } from './printf-args.js';
@@ -129,16 +129,18 @@ function validateTranslatedString(
   const placeholder = validatePlaceholders(source, translated);
   const printf = validatePrintfArgs(source, translated);
   const markup = validateAndroidMarkup(source, translated);
+  const maskMarkers = validateAnnotationMaskMarkers(translated);
   const issues = [
     ...placeholder.missing.map((token) => `missing ${token}`),
     ...placeholder.extra.map((token) => `extra ${token}`),
     ...printf.missing.map((token) => `missing printf ${token}`),
     ...printf.extra.map((token) => `extra printf ${token}`),
     ...markup,
+    ...maskMarkers,
   ];
   const retryHint = formatPrintfRetryHint(source);
   return {
-    ok: placeholder.ok && printf.ok && markup.length === 0,
+    ok: placeholder.ok && printf.ok && markup.length === 0 && maskMarkers.length === 0,
     issues,
     retryHint,
   };
@@ -237,7 +239,7 @@ export async function translateBatch(
         result.failed.push({ id: item.id, reason: 'missing_in_response' });
         continue;
       }
-      const translated = unmaskAndroidMarkup(raw);
+      const translated = raw;
       const check = validateTranslatedString(source, translated);
       if (check.ok) {
         result.translations.set(item.id, translated);
@@ -261,7 +263,7 @@ export async function translateBatch(
         const raw = retryParsed?.[item.id];
         const source = sourceById.get(item.id) ?? item.text;
         if (typeof raw === 'string' && raw.trim() !== '') {
-          const translated = unmaskAndroidMarkup(raw);
+          const translated = raw;
           if (validateTranslatedString(source, translated).ok) {
             result.translations.set(item.id, translated);
             continue;

@@ -10,6 +10,7 @@ export interface I18nAgentConfig {
   targets: string[];
   localesDir: string; // absolute
   model?: string;
+  provider?: string;
   contextPath: string; // absolute; may not exist
   glossaryPath: string; // absolute; may not exist
   configPath: string; // absolute
@@ -66,6 +67,7 @@ export function loadConfig(cwd: string): I18nAgentConfig {
     targets,
     localesDir: resolve(root, typeof raw.locales === 'string' ? raw.locales : 'locales'),
     model: typeof translator.model === 'string' ? translator.model : undefined,
+    provider: typeof translator.provider === 'string' ? translator.provider : undefined,
     contextPath: resolve(root, typeof raw.context === 'string' ? raw.context : 'i18n-agent.context.yaml'),
     glossaryPath: resolve(
       root,

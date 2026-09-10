@@ -58,7 +58,11 @@ function unescapeAndroid(value: string): string {
 }
 
 function toIcuPluralBody(value: string): string {
-  return value.replace(/%(\d+\$)?d/g, '#');
+  const intPlaceholders = value.match(/%(\d+\$)?d/g) ?? [];
+  if (intPlaceholders.length === 1) {
+    return value.replace(/%(\d+\$)?d/g, '#');
+  }
+  return value;
 }
 
 export function parseAndroidStringsXml(xml: string): AndroidImportResult {

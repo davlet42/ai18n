@@ -24,6 +24,7 @@ export interface LockEntry {
 
 export interface Lockfile {
   version: 1;
+  glossarySha?: string;
   keys: { [id: string]: LockEntry };
 }
 
@@ -49,6 +50,9 @@ export function readLockfile(path: string): Lockfile {
 // Keys are written sorted so lockfile diffs stay minimal and reviewable in git.
 export function writeLockfile(path: string, lock: Lockfile): void {
   const sorted: Lockfile = { version: 1, keys: {} };
+  if (lock.glossarySha) {
+    sorted.glossarySha = lock.glossarySha;
+  }
   for (const id of Object.keys(lock.keys).sort()) {
     const entry = lock.keys[id];
     const targets: LockEntry['targets'] = {};

@@ -24,12 +24,14 @@ import {
 import { appendRunMetrics } from './metrics.js';
 import { countPlan, planNamespace, type NamespacePlan, type PlanCounts } from './planner.js';
 import { expandPluralCategoriesIfNeeded } from './plural-expand.js';
+import { applyGlossaryInvalidation } from './glossary-invalidation.js';
+import { sourceMatchesGlossary } from './glossary-match.js';
+import { translateBatch, type BatchItem, type BatchTransport } from './translate-batch.js';
 import {
-  claudeCliTransport,
-  translateBatch,
-  type BatchItem,
-  type BatchTransport,
-} from './translate-batch.js';
+  createBatchTransport,
+  resolveTranslateModel,
+  resolveTranslateProvider,
+} from './translate-provider.js';
 
 // The orchestrator behind `translate`, `check` and `status`: read everything,
 // plan every (namespace × target language) pair, optionally execute the plan
@@ -72,6 +74,8 @@ export function computeSync(config: I18nAgentConfig): SyncState {
     sourceTrees.set(ns, tree);
     sourceFlat.set(ns, flattenTree(tree));
   }
+
+  applyGlossaryInvalidation(lock, config.glossaryPath, sourceFlat);
 
   const plans: NamespacePlan[] = [];
   const reviews: ReviewItem[] = [];
@@ -119,8 +123,11 @@ export function computeSync(config: I18nAgentConfig): SyncState {
 }
 
 export interface ApplySyncOptions {
-  transport?: BatchTransport; // tests inject; default = subscription agent
+  transport?: BatchTransport;
+  provider?: string;
+  model?: string;
   retranslateStale?: boolean; // also machine-translate `review` keys
+  retranslateGlossary?: boolean; // machine-translate keys whose source matches glossary terms
   acceptStale?: boolean; // accept reviewed values as-is against the new source
   langs?: string[]; // subset of config.targets
 }
@@ -141,10 +148,16 @@ export async function applySync(
   state: SyncState,
   options: ApplySyncOptions = {},
 ): Promise<ApplySyncResult> {
-  const transport = options.transport ?? claudeCliTransport({ model: config.model });
+  const provider = resolveTranslateProvider(options.provider ?? config.provider);
+  const model = resolveTranslateModel(provider, options.model ?? config.model);
+  const transport = options.transport ?? createBatchTransport(provider, model);
   const contextMap = loadContextMap(config.contextPath, state.layout.kind);
   const glossaryTerms = loadGlossaryTerms(config.glossaryPath);
   const langs = options.langs ?? config.targets;
+
+  state.lock.glossarySha = applyGlossaryInvalidation(state.lock, config.glossaryPath, state.sourceFlat, {
+    force: options.retranslateGlossary,
+  });
 
   const result: ApplySyncResult = {
     writtenFiles: [],
@@ -166,15 +179,37 @@ export async function applySync(
     const items: BatchItem[] = [];
     for (const plan of langPlans) {
       for (const action of plan.actions) {
-        const wants =
+        const id = keyId(plan.namespace, action.key);
+        let wants =
           action.type === 'translate' ||
           action.type === 'retranslate' ||
           (options.retranslateStale && action.type === 'review');
+        if (
+          options.retranslateGlossary &&
+          action.type === 'keep' &&
+          typeof action.value === 'string'
+        ) {
+          const sourceText = state.sourceFlat.get(plan.namespace)?.get(action.key);
+          const locked = state.lock.keys[id]?.targets[lang];
+          if (
+            typeof sourceText === 'string' &&
+            locked?.by === 'machine' &&
+            sourceMatchesGlossary(sourceText, glossaryTerms)
+          ) {
+            wants = true;
+          }
+        }
         if (!wants) {
           continue;
         }
-        const id = keyId(plan.namespace, action.key);
-        items.push({ id, text: (action as { sourceText: string }).sourceText, context: contextMap.get(id) });
+        const sourceText =
+          action.type === 'keep'
+            ? state.sourceFlat.get(plan.namespace)?.get(action.key)
+            : (action as { sourceText: string }).sourceText;
+        if (typeof sourceText !== 'string') {
+          continue;
+        }
+        items.push({ id, text: sourceText, context: contextMap.get(id) });
       }
     }
 
@@ -211,7 +246,7 @@ export async function applySync(
         chars_source: charsSource,
         chars_translated: charsTranslated,
         cost_usd: batch.costUsd,
-        model: config.model,
+        model,
       });
     }
 
@@ -238,6 +273,12 @@ export async function applySync(
         };
         switch (action.type) {
           case 'keep': {
+            const glossaryRetranslated = batch.translations.get(id);
+            if (glossaryRetranslated !== undefined) {
+              values.set(action.key, finalizeMachineString(glossaryRetranslated));
+              result.translated += 1;
+              break;
+            }
             if (typeof action.value === 'string' && state.lock.keys[id]?.targets[lang]?.by === 'machine') {
               values.set(action.key, finalizeMachineString(action.value));
             } else {

@@ -2,7 +2,13 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Leaf, LocaleTree } from '../locale-files.js';
 import { escapeAndroidForResources } from '../android-markup.js';
-import { collectArgOrder, findIcuMessage, hasSecondIcuMessage, toPositional } from './transform.js';
+import {
+  androidPositionalToken,
+  collectArgOrder,
+  findIcuMessage,
+  hasSecondIcuMessage,
+  toPositional,
+} from './transform.js';
 
 // Android emitter: values-<lang>/strings.xml (source language → values/).
 // Keys `ns:a.b` become resource names `ns_a_b` by default (or bare `a_b` when
@@ -38,7 +44,7 @@ export function escapeAndroid(text: string): string {
 
 function positionalize(value: string, sourceValue: string, hash: boolean): string {
   const order = collectArgOrder(sourceValue, hash);
-  return toPositional(value, order, (i, token) => (token === '#' ? `%${i}$d` : `%${i}$s`));
+  return toPositional(value, order, (i, token) => androidPositionalToken(i, token));
 }
 
 export interface AndroidWarnings {

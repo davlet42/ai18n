@@ -7,6 +7,7 @@ const {
   escapeAndroid,
   emitAndroidXml,
   validateAndroidMarkup,
+  validateAnnotationMaskMarkers,
   translateBatch,
 } = await import('../dist/index.js');
 
@@ -66,6 +67,23 @@ describe('translateBatch annotation markup', () => {
     );
     assert.equal(result.failed.length, 0);
     assert.ok(result.translations.get('android:auth_signin_terms')?.includes('<annotation type="terms">'));
+  });
+
+  it('fails when mask markers leak into the translation', async () => {
+    const transport = async () =>
+      JSON.stringify({
+        'android:auth_signin_terms':
+          'Продолжая, вы соглашаетесь с <annotation type="terms">⟦0⟧</annotation> и <annotation type="privacy">⟦1⟧</annotation>',
+      });
+    const result = await translateBatch(
+      [{ id: 'android:auth_signin_terms', text: AUTH_SIGNIN_TERMS }],
+      { sourceLang: 'en', targetLang: 'ru', transport },
+    );
+    assert.equal(result.translations.size, 0);
+    assert.equal(result.failed[0]?.reason, 'placeholder_violation');
+    assert.deepEqual(validateAnnotationMaskMarkers(result.failed[0] ? '⟦0⟧' : ''), [
+      'annotation mask markers leaked (⟦n⟧) — inner text was not translated',
+    ]);
   });
 
   it('fails when annotation tags are stripped', async () => {

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.0 (2026-09-10)
+
+**Feedback-driven hardening + Cursor translate provider**
+
+- `translate --provider cursor-cli|claude-cli` (default `claude-cli`; env `I18N_AGENT_PROVIDER`) — Cursor uses `composer-2.5` by default
+- `translate --retranslate-glossary` + lockfile `glossarySha` — retranslate machine-owned keys whose English source contains glossary terms; auto-invalidate when glossary file changes
+- Annotation mask leak guard: `check` fails on leftover `⟦n⟧` markers; translate guard rejects them
+- Android plural import: only a single `%d` per plural body becomes ICU `#`; multiple indices are preserved
+- Export `collectArgOrder` scans printf tokens inside ICU plural bodies for correct round-trip
+
+Companion: `i18n-agent-nest@0.1.14` tracks `i18n-agent@^0.9.0`.
+
 ## 0.8.7 (2026-09-09)
 
 **Translate guard ICU plural signatures** — `validatePlaceholders` compares unique token sets for matching ICU plural pairs so printf tokens repeated per CLDR category no longer fail translation.

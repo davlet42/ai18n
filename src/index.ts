@@ -93,6 +93,8 @@ export { extractFormatArgs, validateFormatArgSet } from './validators/placeholde
 export {
   extractAnnotationTags,
   validateAndroidMarkup,
+  validateAnnotationMaskMarkers,
+  hasAnnotationMaskMarkers,
   hasAndroidAnnotationMarkup,
   maskAndroidMarkup,
   unmaskAndroidMarkup,
@@ -100,7 +102,21 @@ export {
 } from './android-markup.js';
 export type { AndroidMarkupMask } from './android-markup.js';
 export { validateAndroidPlural, validateAndroidPluralPair } from './validators/android-plural.js';
-export { runAndroidStructuralCheck, formatAndroidCheckIssues } from './validators/android-check.js';
+export {
+  runAndroidStructuralCheck,
+  runMaskMarkerCheck,
+  formatAndroidCheckIssues,
+} from './validators/android-check.js';
+export {
+  createBatchTransport,
+  cursorCliTransport,
+  parseTranslateProvider,
+  resolveTranslateProvider,
+  resolveTranslateModel,
+  providerLabel,
+} from './translate-provider.js';
+export type { TranslateProvider } from './translate-provider.js';
+export { sourceMatchesGlossary, parseGlossarySearchTerms, readGlossaryFileSha } from './glossary-match.js';
 export type { AndroidCheckIssue, AndroidCheckKind, AndroidCheckOptions } from './validators/android-check.js';
 
 export { buildBundle, BundleReader, BUNDLE_MANIFEST } from './bundle.js';

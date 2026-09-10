@@ -16,7 +16,7 @@ function printHelp(): void {
 
 Usage:
   i18n-agent init [--locales <dir>] [--source <lang>]     detect layout, write config + templates
-  i18n-agent translate [--dry-run] [--review] [--retranslate-stale] [--lang <l>]…
+  i18n-agent translate [--dry-run] [--review] [--retranslate-stale] [--retranslate-glossary] [--provider claude-cli|cursor-cli] [--lang <l>]…
   i18n-agent check [--platform android]                   CI gate: lockfile drift; optional Android structural rules
   i18n-agent status [--platform android]                  per-language sync overview; optional structural summary
   i18n-agent add-locale <lang> [<lang>…] [--translate]    add target languages

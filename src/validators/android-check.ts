@@ -7,11 +7,11 @@ import {
   readLocaleTree,
   type Leaf,
 } from '../locale-files.js';
-import { validateAndroidMarkup } from './android-markup.js';
+import { validateAndroidMarkup, validateAnnotationMaskMarkers } from '../android-markup.js';
 import { validateCldrPluralPair } from './cldr-plural.js';
 import { validateFormatArgSet } from './placeholder-set.js';
 
-export type AndroidCheckKind = 'plural' | 'placeholder' | 'markup';
+export type AndroidCheckKind = 'plural' | 'placeholder' | 'markup' | 'mask';
 
 export interface AndroidCheckIssue {
   lang: string;
@@ -82,6 +82,35 @@ export function runAndroidStructuralCheck(
         }
         for (const message of validateAndroidMarkup(sourceValue, targetValue)) {
           issues.push({ lang, namespace: ns, key, kind: 'markup', message });
+        }
+        for (const message of validateAnnotationMaskMarkers(targetValue)) {
+          issues.push({ lang, namespace: ns, key, kind: 'mask', message });
+        }
+      }
+    }
+  }
+
+  return issues;
+}
+
+export function runMaskMarkerCheck(config: I18nAgentConfig): AndroidCheckIssue[] {
+  const layout = detectLayout(config.localesDir, config.source);
+  const namespaces = listNamespaces(layout, config.source);
+  const issues: AndroidCheckIssue[] = [];
+  const langs = [config.source, ...config.targets];
+
+  for (const lang of langs) {
+    for (const ns of namespaces) {
+      const tree = readLocaleTree(layout, lang, ns);
+      if (!tree) {
+        continue;
+      }
+      for (const [key, value] of flattenTree(tree)) {
+        if (typeof value !== 'string') {
+          continue;
+        }
+        for (const message of validateAnnotationMaskMarkers(value)) {
+          issues.push({ lang, namespace: ns, key, kind: 'mask', message });
         }
       }
     }

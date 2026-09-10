@@ -1,6 +1,10 @@
 import { loadConfig } from '../config.js';
 import { computeSync } from '../sync.js';
-import { formatAndroidCheckIssues, runAndroidStructuralCheck } from '../validators/android-check.js';
+import {
+  formatAndroidCheckIssues,
+  runAndroidStructuralCheck,
+  runMaskMarkerCheck,
+} from '../validators/android-check.js';
 
 export interface CheckOptions {
   platformAndroid?: boolean;
@@ -52,6 +56,15 @@ export function runCheck(cwd: string, args: string[] = []): number {
     console.log('\nRun `i18n-agent translate` to sync (reviews need a human — see `i18n-agent translate --review`).');
   } else {
     console.log('All locales in sync.');
+  }
+
+  const maskIssues = runMaskMarkerCheck(config);
+  if (maskIssues.length > 0) {
+    failed = true;
+    console.log(`\nAnnotation mask check: ${maskIssues.length} issue(s)`);
+    for (const line of formatAndroidCheckIssues(maskIssues)) {
+      console.log(`  ${line}`);
+    }
   }
 
   if (options.platformAndroid) {

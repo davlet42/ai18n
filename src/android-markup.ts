@@ -1,6 +1,7 @@
 const ANNOTATION_BLOCK_RE = /<annotation\b([^>]*)>([\s\S]*?)<\/annotation>/g;
 const ANNOTATION_TAG_RE = /<annotation\b[^>]*>|<\/annotation>/g;
 const ANNOTATION_SEGMENT_RE = /(<annotation\b[^>]*>|<\/annotation>)/g;
+const ANNOTATION_MASK_MARKER_RE = /⟦\d+⟧/;
 
 export function hasAndroidAnnotationMarkup(text: string): boolean {
   return text.includes('<annotation');
@@ -25,9 +26,20 @@ export function maskAndroidMarkup(text: string): AndroidMarkupMask {
   return { masked, original: text };
 }
 
-/** Restore any leftover ⟦n⟧ markers; translated inner text is kept when tags survive. */
+export function hasAnnotationMaskMarkers(text: string): boolean {
+  return ANNOTATION_MASK_MARKER_RE.test(text);
+}
+
+/** @deprecated Markers must be translated away; kept for API compatibility. */
 export function unmaskAndroidMarkup(translated: string): string {
   return translated;
+}
+
+export function validateAnnotationMaskMarkers(target: string): string[] {
+  if (!hasAnnotationMaskMarkers(target)) {
+    return [];
+  }
+  return ['annotation mask markers leaked (⟦n⟧) — inner text was not translated'];
 }
 
 function multisetDiff(want: string[], got: string[]): { missing: string[]; extra: string[] } {
