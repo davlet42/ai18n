@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.18 (2026-10-11)
+
+- Depend on `i18n-agent@^0.9.4` (`@cursor-translate/core@^0.2.17`).
+
 ## 0.1.17 (2026-10-11)
 
 - Depend on `i18n-agent@^0.9.3` (explicit Claude Haiku 5.5 default for `claude-cli`).
