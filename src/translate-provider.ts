@@ -4,6 +4,7 @@ import { claudeCliTransport, type BatchTransport } from './translate-batch.js';
 export type TranslateProvider = 'claude-cli' | 'cursor-cli';
 
 const CURSOR_DEFAULT_MODEL = 'composer-2.5';
+const CLAUDE_DEFAULT_MODEL = 'claude-haiku-5-5';
 
 export function parseTranslateProvider(value: string | undefined | null): TranslateProvider | null {
   if (value === 'claude-cli' || value === 'anthropic' || value === 'claude') {
@@ -35,7 +36,7 @@ export function resolveTranslateModel(provider: TranslateProvider, configModel?:
   if (provider === 'cursor-cli') {
     return process.env.CURSOR_TRANSLATE_MODEL ?? CURSOR_DEFAULT_MODEL;
   }
-  return undefined;
+  return process.env.CLAUDE_TRANSLATE_MODEL ?? CLAUDE_DEFAULT_MODEL;
 }
 
 export function cursorCliTransport(options: { model?: string } = {}): BatchTransport {

@@ -1,6 +1,6 @@
 {
   "name": "i18n-agent",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Locale files translated by the coding-agent subscription you already pay for — diff-synced via a lockfile, placeholder-safe, manual edits stay sacred. No API keys, no per-word fees.",
   "type": "module",
   "bin": {
@@ -19,7 +19,7 @@
     "test": "npm run build && node --test test/*.test.mjs && npm run test -w i18n-agent-nest --if-present"
   },
   "dependencies": {
-    "@cursor-translate/core": "file:../../../../tmp/cursor-translate-core-0.2.16.tgz",
+    "@cursor-translate/core": "^0.2.15",
     "yaml": "^2.5.0"
   },
   "devDependencies": {

@@ -1,10 +1,14 @@
 # Changelog
 
+## 0.9.3 (2026-10-11)
+
+**Claude Haiku 5.5 default (i18n-agent)** — `resolveTranslateModel` for `claude-cli` now defaults to `claude-haiku-5-5` (was implicit `claude-haiku-4-5` via `@cursor-translate/core`). Override via `translator.model`, `I18N_AGENT_MODEL`, or `CLAUDE_TRANSLATE_MODEL` unchanged. Depends on `@cursor-translate/core@^0.2.15` until `0.2.16` is on npm (same default in core).
+
+Companion: `i18n-agent-nest@0.1.17` tracks `i18n-agent@^0.9.3`.
+
 ## 0.9.2 (2026-10-11)
 
-**Claude Haiku 5.5 default** — `@cursor-translate/core@^0.2.16` sets the default `claude-cli` translate model to `claude-haiku-5-5` (was `claude-haiku-4-5`). Override via `translator.model`, `I18N_AGENT_MODEL`, or `CLAUDE_TRANSLATE_MODEL` unchanged.
-
-Companion: `i18n-agent-nest@0.1.16` tracks `i18n-agent@^0.9.2`.
+**Withdrawn on npm** — depended on unpublished `@cursor-translate/core@0.2.16`; use **0.9.3** instead.
 
 ## 0.9.1 (2026-09-10)
 
