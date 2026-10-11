@@ -6,7 +6,7 @@
 npx i18n-agent translate   # en.json → ru.json, es.json, de.json — via `claude -p` on your subscription
 ```
 
-The idea: modern coding agents run on subscriptions that already include a cheap model tier. i18n-agent batches your untranslated locale strings and pipes them through a headless agent call (`claude -p --model haiku`) — so keeping 10 languages in sync costs you **$0 on top of the subscription you already have**. Prefer API keys or CI without a subscription? A provider switch away.
+The idea: modern coding agents run on subscriptions that already include a cheap model tier. i18n-agent batches your untranslated locale strings and pipes them through a headless agent call (`claude -p`, default model `claude-haiku-5-5` via `@cursor-translate/core`) — so keeping 10 languages in sync costs you **$0 on top of the subscription you already have**. Prefer API keys or CI without a subscription? A provider switch away.
 
 ## Quick start
 

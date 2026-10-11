@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.2 (2026-10-11)
+
+**Claude Haiku 5.5 default** — `@cursor-translate/core@^0.2.16` sets the default `claude-cli` translate model to `claude-haiku-5-5` (was `claude-haiku-4-5`). Override via `translator.model`, `I18N_AGENT_MODEL`, or `CLAUDE_TRANSLATE_MODEL` unchanged.
+
+Companion: `i18n-agent-nest@0.1.16` tracks `i18n-agent@^0.9.2`.
+
 ## 0.9.1 (2026-09-10)
 
 **Glossary + plural category quality (feedback round 3)**

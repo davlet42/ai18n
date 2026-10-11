@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.16 (2026-10-11)
+
+- Depend on `i18n-agent@^0.9.2` (Claude Haiku 5.5 default via `@cursor-translate/core@^0.2.16`).
+
 ## 0.1.11 (2026-09-09)
 
 - Depend on `i18n-agent@^0.8.5` (CLDR plural `#` parity for expanded targets).

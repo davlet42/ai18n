@@ -97,7 +97,7 @@ locales: ${localesDir}
 translator:
   # Default backend spawns \`claude -p\` on the cheap tier of your Claude
   # subscription — no API keys. Override the model if you want:
-  # model: claude-haiku-4-5
+  # model: claude-haiku-5-5
 
 # Optional companion files (created with documented templates):
 context: i18n-agent.context.yaml
